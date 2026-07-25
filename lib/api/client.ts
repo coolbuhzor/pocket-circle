@@ -1,3 +1,5 @@
+import { API_PREFIX } from "@/lib/api/constants";
+
 export class ApiError extends Error {
   status: number;
 
@@ -13,8 +15,30 @@ type ApiFetchOptions = RequestInit & {
   formData?: boolean;
 };
 
+/** Path relative to `/api/v1` — strips a leading slash or accidental `api/v1/` prefix. */
+function toBffPath(path: string): string {
+  const cleaned = path.replace(/^\//, "").replace(/^api\/v1\//, "");
+  return `${API_PREFIX}/${cleaned}`;
+}
+
+async function parseErrorMessage(res: Response): Promise<string> {
+  let message = "Request failed";
+  try {
+    const err = (await res.json()) as { message?: string | string[] };
+    if (Array.isArray(err.message)) {
+      message = err.message.join(", ");
+    } else if (err.message) {
+      message = err.message;
+    }
+  } catch {
+    // keep default
+  }
+  return message;
+}
+
 /**
- * Browser → Next.js BFF proxy. Never talks to BACKEND_URL directly.
+ * Browser → Next.js BFF proxy (`/api/v1/...`). Never talks to BACKEND_URL directly.
+ * Pass paths relative to the versioned API, e.g. `groups`, `banks/resolve?…`.
  */
 export async function apiFetch<T = unknown>(
   path: string,
@@ -27,24 +51,13 @@ export async function apiFetch<T = unknown>(
     headers.set("Content-Type", "application/json");
   }
 
-  const res = await fetch(`/api/v1/${path.replace(/^\//, "")}`, {
+  const res = await fetch(toBffPath(path), {
     ...rest,
     headers,
   });
 
   if (!res.ok) {
-    let message = "Request failed";
-    try {
-      const err = (await res.json()) as { message?: string | string[] };
-      if (Array.isArray(err.message)) {
-        message = err.message.join(", ");
-      } else if (err.message) {
-        message = err.message;
-      }
-    } catch {
-      // keep default
-    }
-    throw new ApiError(res.status, message);
+    throw new ApiError(res.status, await parseErrorMessage(res));
   }
 
   if (res.status === 204) {
@@ -68,39 +81,13 @@ export async function authFetch<T = unknown>(
   });
 
   if (!res.ok) {
-    let message = "Request failed";
-    try {
-      const err = (await res.json()) as { message?: string | string[] };
-      if (Array.isArray(err.message)) {
-        message = err.message.join(", ");
-      } else if (err.message) {
-        message = err.message;
-      }
-    } catch {
-      // keep default
-    }
-    throw new ApiError(res.status, message);
+    throw new ApiError(res.status, await parseErrorMessage(res));
   }
 
   return res.json() as Promise<T>;
 }
 
-/** Public invite — no auth cookie required. */
+/** Public invite lookup — no auth cookie required (BFF allows GET invites/:token). */
 export async function fetchPublicInvite<T = unknown>(token: string): Promise<T> {
-  const res = await fetch(`/api/invites/${encodeURIComponent(token)}`);
-  if (!res.ok) {
-    let message = "Request failed";
-    try {
-      const err = (await res.json()) as { message?: string | string[] };
-      if (Array.isArray(err.message)) {
-        message = err.message.join(", ");
-      } else if (err.message) {
-        message = err.message;
-      }
-    } catch {
-      // keep default
-    }
-    throw new ApiError(res.status, message);
-  }
-  return res.json() as Promise<T>;
+  return apiFetch<T>(`invites/${encodeURIComponent(token)}`);
 }

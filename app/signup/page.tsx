@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { redirect, useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
@@ -12,13 +12,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/lib/auth";
 import { useToast } from "@/components/toast";
+import { PASSWORD_HINT, passwordSchema } from "@/lib/password";
 
 const schema = z.object({
   firstName: z.string().min(1, "Enter your first name"),
   lastName: z.string().min(1, "Enter your last name"),
   middleName: z.string().optional(),
   email: z.string().email("Enter a valid email"),
-  password: z.string().min(8, "Use at least 8 characters"),
+  password: passwordSchema,
   bankCode: z.string().min(1, "Select your bank"),
   bankName: z.string().min(1, "Select your bank"),
   accountNumber: z
@@ -29,8 +30,7 @@ const schema = z.object({
 type FormValues = z.infer<typeof schema>;
 
 function SignupForm() {
-  const { signup, user, loading } = useAuth();
-  const router = useRouter();
+  const { signup } = useAuth();
   const searchParams = useSearchParams();
   const next = searchParams.get("next") || "/dashboard";
   const { toast } = useToast();
@@ -58,10 +58,9 @@ function SignupForm() {
 
   const bankCode = useWatch({ control, name: "bankCode" }) ?? "";
   const accountNumber = useWatch({ control, name: "accountNumber" }) ?? "";
-
-  if (!loading && user) {
-    redirect(next);
-  }
+  const firstName = useWatch({ control, name: "firstName" }) ?? "";
+  const lastName = useWatch({ control, name: "lastName" }) ?? "";
+  const middleName = useWatch({ control, name: "middleName" }) ?? "";
 
   async function onSubmit(values: FormValues) {
     const result = await signup({
@@ -79,7 +78,9 @@ function SignupForm() {
       return;
     }
     toast("Account created");
-    router.push(next);
+    // Full navigation so the new httpOnly session cookie is on the next
+    // document request — soft nav left a half-logged-in state.
+    window.location.assign(next);
   }
 
   return (
@@ -118,13 +119,18 @@ function SignupForm() {
           {...register("email")}
           error={errors.email?.message}
         />
-        <Input
-          label="Password"
-          type="password"
-          autoComplete="new-password"
-          {...register("password")}
-          error={errors.password?.message}
-        />
+        <div>
+          <Input
+            label="Password"
+            type="password"
+            autoComplete="new-password"
+            {...register("password")}
+            error={errors.password?.message}
+          />
+          {!errors.password && (
+            <p className="mt-1.5 text-xs text-text-muted">{PASSWORD_HINT}</p>
+          )}
+        </div>
 
         <Controller
           name="bankCode"
@@ -133,6 +139,7 @@ function SignupForm() {
             <BankDetailsFields
               bankCode={bankCode}
               accountNumber={accountNumber}
+              expectedName={{ firstName, lastName, middleName }}
               onBankChange={(bank) => {
                 setValue("bankCode", bank?.code ?? "", {
                   shouldValidate: true,

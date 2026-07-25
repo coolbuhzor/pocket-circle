@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/toast";
 import { useAuth } from "@/lib/auth";
 import type { User } from "@/lib/api/types";
+import { PASSWORD_HINT, passwordSchema as strongPassword } from "@/lib/password";
 import { getFullName } from "@/lib/user-name";
 import { cn, getInitials } from "@/lib/utils";
 
@@ -36,7 +37,7 @@ const preferencesSchema = z.object({
 const passwordSchema = z
   .object({
     currentPassword: z.string().min(1, "Enter your current password"),
-    newPassword: z.string().min(8, "Use at least 8 characters"),
+    newPassword: strongPassword,
     confirmPassword: z.string().min(1, "Confirm your new password"),
   })
   .refine((values) => values.newPassword === values.confirmPassword, {
@@ -261,14 +262,19 @@ function UpdatePasswordCard() {
           error={errors.currentPassword?.message}
         />
         <div className="grid gap-4 sm:grid-cols-2">
-          <Input
-            label="New password"
-            type="password"
-            autoComplete="new-password"
-            placeholder="Min. 8 characters"
-            {...register("newPassword")}
-            error={errors.newPassword?.message}
-          />
+          <div>
+            <Input
+              label="New password"
+              type="password"
+              autoComplete="new-password"
+              placeholder="Strong password"
+              {...register("newPassword")}
+              error={errors.newPassword?.message}
+            />
+            {!errors.newPassword && (
+              <p className="mt-1.5 text-xs text-text-muted">{PASSWORD_HINT}</p>
+            )}
+          </div>
           <Input
             label="Confirm new password"
             type="password"
@@ -352,6 +358,11 @@ function PreferencesPanel({ user }: { user: User }) {
               <BankDetailsFields
                 bankCode={bankCode}
                 accountNumber={accountNumber}
+                expectedName={{
+                  firstName: user.firstName ?? "",
+                  lastName: user.lastName ?? "",
+                  middleName: user.middleName ?? undefined,
+                }}
                 onBankChange={(bank) => {
                   setValue("bankCode", bank?.code ?? "", {
                     shouldValidate: true,

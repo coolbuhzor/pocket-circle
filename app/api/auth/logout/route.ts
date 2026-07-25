@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import {
   AUTH_COOKIE,
   AUTH_COOKIE_OPTIONS,
-  getBackendUrl,
+  backendApiUrl,
 } from "@/lib/api/backend";
 
 export async function POST() {
@@ -12,7 +12,7 @@ export async function POST() {
 
   if (token) {
     try {
-      await fetch(`${getBackendUrl()}/api/v1/auth/logout`, {
+      await fetch(backendApiUrl("auth/logout"), {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -21,7 +21,7 @@ export async function POST() {
     }
   }
 
-  cookieStore.set(AUTH_COOKIE, "", { ...AUTH_COOKIE_OPTIONS, maxAge: 0 });
-
-  return NextResponse.json({ ok: true });
+  const response = NextResponse.json({ ok: true });
+  response.cookies.set(AUTH_COOKIE, "", { ...AUTH_COOKIE_OPTIONS, maxAge: 0 });
+  return response;
 }

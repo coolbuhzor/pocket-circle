@@ -1,16 +1,21 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
-import { AUTH_COOKIE, getBackendUrl } from "@/lib/api/backend";
+import { AUTH_COOKIE, backendApiUrl } from "@/lib/api/backend";
 
 type RouteContext = { params: Promise<{ path: string[] }> };
 
-/** Public GET routes (signup bank picker, account resolve) — no cookie required. */
+/**
+ * Public GET routes — no cookie required.
+ * Banks: signup bank picker + NUBAN resolve.
+ * Invites: tokenised join-link preview before login.
+ */
 function isPublicGet(path: string[], method: string): boolean {
   if (method !== "GET") return false;
   if (path.length === 1 && path[0] === "banks") return true;
   if (path.length === 2 && path[0] === "banks" && path[1] === "resolve") {
     return true;
   }
+  if (path.length === 2 && path[0] === "invites" && path[1]) return true;
   return false;
 }
 
@@ -29,7 +34,7 @@ async function proxyRequest(
   }
 
   const incomingUrl = new URL(request.url);
-  const targetUrl = `${getBackendUrl()}/api/v1/${path.join("/")}${incomingUrl.search}`;
+  const targetUrl = backendApiUrl(`${path.join("/")}${incomingUrl.search}`);
 
   const headers = new Headers();
   const contentType = request.headers.get("content-type");
