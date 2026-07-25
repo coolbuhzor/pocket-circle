@@ -4,6 +4,16 @@ import { AUTH_COOKIE, getBackendUrl } from "@/lib/api/backend";
 
 type RouteContext = { params: Promise<{ path: string[] }> };
 
+/** Public GET routes (signup bank picker, account resolve) — no cookie required. */
+function isPublicGet(path: string[], method: string): boolean {
+  if (method !== "GET") return false;
+  if (path.length === 1 && path[0] === "banks") return true;
+  if (path.length === 2 && path[0] === "banks" && path[1] === "resolve") {
+    return true;
+  }
+  return false;
+}
+
 async function proxyRequest(
   request: Request,
   context: RouteContext,
@@ -11,11 +21,13 @@ async function proxyRequest(
   const cookieStore = await cookies();
   const token = cookieStore.get(AUTH_COOKIE)?.value;
 
-  if (!token) {
+  const { path } = await context.params;
+  const method = request.method.toUpperCase();
+
+  if (!token && !isPublicGet(path, method)) {
     return NextResponse.json({ message: "Not authenticated" }, { status: 401 });
   }
 
-  const { path } = await context.params;
   const incomingUrl = new URL(request.url);
   const targetUrl = `${getBackendUrl()}/api/v1/${path.join("/")}${incomingUrl.search}`;
 
@@ -24,10 +36,11 @@ async function proxyRequest(
   if (contentType) {
     headers.set("Content-Type", contentType);
   }
-  headers.set("Authorization", `Bearer ${token}`);
+  if (token) {
+    headers.set("Authorization", `Bearer ${token}`);
+  }
   // Never forward a client-supplied Authorization header (already overwritten above).
 
-  const method = request.method.toUpperCase();
   const hasBody = method !== "GET" && method !== "HEAD";
 
   const init: RequestInit & { duplex?: "half" } = {
@@ -35,6 +48,9 @@ async function proxyRequest(
     headers,
     // Multipart: forward body stream as-is so the boundary stays intact.
     body: hasBody ? request.body : undefined,
+    ...(path.length === 1 && path[0] === "banks" && method === "GET"
+      ? { next: { revalidate: 3600 } }
+      : { cache: "no-store" }),
   };
   if (hasBody) {
     init.duplex = "half";

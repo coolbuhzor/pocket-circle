@@ -5,7 +5,7 @@ type RouteContext = { params: Promise<{ token: string }> };
 
 /**
  * Public (unauthenticated) invite lookup.
- * The catch-all /api/proxy requires a cookie; invites do not.
+ * The catch-all /api/v1 requires a cookie; invites do not.
  */
 export async function GET(_request: Request, context: RouteContext) {
   const { token } = await context.params;

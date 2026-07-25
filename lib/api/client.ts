@@ -27,7 +27,7 @@ export async function apiFetch<T = unknown>(
     headers.set("Content-Type", "application/json");
   }
 
-  const res = await fetch(`/api/proxy/${path.replace(/^\//, "")}`, {
+  const res = await fetch(`/api/v1/${path.replace(/^\//, "")}`, {
     ...rest,
     headers,
   });

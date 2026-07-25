@@ -33,7 +33,8 @@ Browser (UI + React Query)
         ▼
 Next.js Route Handlers
   /api/auth/*     → login/signup set httpOnly pc_token cookie; return { user } only
-  /api/proxy/*    → attach Authorization: Bearer from cookie → BACKEND_URL
+  /api/v1/*       → attach Authorization: Bearer from cookie → BACKEND_URL
+                    (GET banks + banks/resolve are public — no cookie)
   /api/invites/*  → public invite lookup (no cookie)
         │
         ▼
