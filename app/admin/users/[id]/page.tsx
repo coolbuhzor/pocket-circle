@@ -2,16 +2,16 @@
 
 import { useParams } from "next/navigation";
 import { UserRound } from "lucide-react";
-import { useAdminUser } from "@/hooks/useAdmin";
-import { EmptyState } from "@/components/EmptyState";
-import { Breadcrumb } from "@/components/Breadcrumb";
-import { AdminUserHeader } from "@/components/admin/AdminUserHeader";
+import { useAdminUser } from "@/hooks/use-admin";
+import { EmptyState } from "@/components/empty-state";
+import { Breadcrumb } from "@/components/breadcrumb";
+import { AdminUserHeader } from "@/components/admin/admin-user-header";
 import {
   adminUserContributionColumns,
   adminUserGroupColumns,
-} from "@/components/admin/userDetailColumns";
-import { DataTable } from "@/components/ui/DataTable";
-import { Skeleton } from "@/components/ui/Skeleton";
+} from "@/components/admin/user-detail-columns";
+import { DataTable } from "@/components/ui/data-table";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function AdminUserDetailPage() {
   const params = useParams<{ id: string }>();

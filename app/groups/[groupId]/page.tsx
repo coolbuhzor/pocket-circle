@@ -3,23 +3,23 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { Receipt } from "lucide-react";
-import { RequireAuth } from "@/components/RequireAuth";
-import { Tabs } from "@/components/Tabs";
-import { ActivityFeed } from "@/components/ActivityFeed";
-import { EmptyState } from "@/components/EmptyState";
-import { ReceiptUploadModal } from "@/components/ReceiptUploadModal";
-import { GroupPageHeader } from "@/components/groups/GroupPageHeader";
-import { GroupOverviewTab } from "@/components/groups/GroupOverviewTab";
-import { GroupMembersTab } from "@/components/groups/GroupMembersTab";
-import { GroupSettingsTab } from "@/components/groups/GroupSettingsTab";
-import { CycleHistoryTable } from "@/components/groups/CycleHistoryTable";
-import { Skeleton } from "@/components/ui/Skeleton";
+import { RequireAuth } from "@/components/require-auth";
+import { Tabs } from "@/components/tabs";
+import { ActivityFeed } from "@/components/activity-feed";
+import { EmptyState } from "@/components/empty-state";
+import { ReceiptUploadModal } from "@/components/receipt-upload-modal";
+import { GroupPageHeader } from "@/components/groups/group-page-header";
+import { GroupOverviewTab } from "@/components/groups/group-overview-tab";
+import { GroupMembersTab } from "@/components/groups/group-members-tab";
+import { GroupSettingsTab } from "@/components/groups/group-settings-tab";
+import { CycleHistoryTable } from "@/components/groups/cycle-history-table";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/lib/auth";
-import { useGroup } from "@/hooks/useGroups";
-import { useContributions, useCycleHistory } from "@/hooks/useCycles";
-import { useActivity } from "@/hooks/useInvites";
-import { useGroupDetailActions } from "@/hooks/useGroupDetailActions";
-import { useGroupDetailDerived } from "@/hooks/useGroupDetailDerived";
+import { useGroup } from "@/hooks/use-groups";
+import { useContributions, useCycleHistory } from "@/hooks/use-cycles";
+import { useActivity } from "@/hooks/use-invites";
+import { useGroupDetailActions } from "@/hooks/use-group-detail-actions";
+import { useGroupDetailDerived } from "@/hooks/use-group-detail-derived";
 import type { GroupFrequency } from "@/lib/api/types";
 import { ApiError } from "@/lib/api/client";
 
@@ -138,7 +138,7 @@ function GroupDetailContent() {
         onChange={(id) => setActiveTab(id as TabId)}
       />
 
-      <div className="mt-6">
+      <div key={activeTab} className="pc-enter mt-6">
         {activeTab === "overview" && cycle && derived.collector && (
           <GroupOverviewTab
             cycle={cycle}

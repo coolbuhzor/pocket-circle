@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import { Fraunces, Inter, JetBrains_Mono } from "next/font/google";
 import { AuthProvider } from "@/lib/auth";
-import { QueryProvider } from "@/components/QueryProvider";
-import { ToastProvider } from "@/components/Toast";
-import { Navbar } from "@/components/Navbar";
+import { QueryProvider } from "@/components/query-provider";
+import { ToastProvider } from "@/components/toast";
+import { Navbar } from "@/components/navbar";
+import { PageTransition } from "@/components/page-transition";
 import "./globals.css";
 
 const inter = Inter({
@@ -42,7 +43,7 @@ export default function RootLayout({
           <AuthProvider>
             <ToastProvider>
               <Navbar />
-              <main className="flex flex-1 flex-col">{children}</main>
+              <PageTransition>{children}</PageTransition>
             </ToastProvider>
           </AuthProvider>
         </QueryProvider>

@@ -1,14 +1,14 @@
 "use client";
 
 import { Suspense } from "react";
-import { useAdminGroups } from "@/hooks/useAdmin";
-import { useAdminListSearch } from "@/hooks/useAdminListSearch";
-import { DataTable } from "@/components/ui/DataTable";
+import { useAdminGroups } from "@/hooks/use-admin";
+import { useAdminListSearch } from "@/hooks/use-admin-list-search";
+import { DataTable } from "@/components/ui/data-table";
 import {
   AdminListHeader,
   AdminListSuspenseFallback,
-} from "@/components/admin/AdminListHeader";
-import { adminGroupsColumns } from "@/components/admin/groupsColumns";
+} from "@/components/admin/admin-list-header";
+import { adminGroupsColumns } from "@/components/admin/groups-columns";
 
 const PAGE_SIZE = 20;
 

@@ -3,13 +3,13 @@
 import {
   useAdminStatsEngagement,
   useAdminStatsFinancial,
-} from "@/hooks/useAdmin";
-import { StatCard } from "@/components/admin/StatCard";
+} from "@/hooks/use-admin";
+import { StatCard } from "@/components/admin/stat-card";
 import {
   VolumeByFrequencyChart,
   VolumeByGroupChart,
-} from "@/components/admin/VolumeCharts";
-import { Skeleton } from "@/components/ui/Skeleton";
+} from "@/components/admin/volume-charts";
+import { Skeleton } from "@/components/ui/skeleton";
 
 function formatPercent(rate: number) {
   return `${(rate * 100).toFixed(1)}%`;
@@ -64,7 +64,7 @@ export default function AdminInsightsPage() {
             How circles are forming and moving money
           </p>
         </div>
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="pc-stagger grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           <StatCard
             label="Invite acceptance rate"
             value={formatPercent(engagement.inviteAcceptanceRate)}

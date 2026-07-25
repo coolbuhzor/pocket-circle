@@ -3,22 +3,22 @@
 import { useState } from "react";
 import { useParams } from "next/navigation";
 import { Receipt } from "lucide-react";
-import { Tabs } from "@/components/Tabs";
-import { ActivityFeed } from "@/components/ActivityFeed";
-import { EmptyState } from "@/components/EmptyState";
-import { GroupPageHeader } from "@/components/groups/GroupPageHeader";
-import { CycleHistoryTable } from "@/components/groups/CycleHistoryTable";
+import { Tabs } from "@/components/tabs";
+import { ActivityFeed } from "@/components/activity-feed";
+import { EmptyState } from "@/components/empty-state";
+import { GroupPageHeader } from "@/components/groups/group-page-header";
+import { CycleHistoryTable } from "@/components/groups/cycle-history-table";
 import {
   AdminGroupMembersTab,
   AdminGroupOverviewTab,
   AdminNotMemberBanner,
-} from "@/components/admin/AdminGroupTabs";
-import { Skeleton } from "@/components/ui/Skeleton";
+} from "@/components/admin/admin-group-tabs";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/lib/auth";
-import { useAdminGroup } from "@/hooks/useAdmin";
-import { useActivity } from "@/hooks/useInvites";
-import { useContributions, useCycleHistory } from "@/hooks/useCycles";
-import { useAdminGroupDerived } from "@/hooks/useAdminGroupDerived";
+import { useAdminGroup } from "@/hooks/use-admin";
+import { useActivity } from "@/hooks/use-invites";
+import { useContributions, useCycleHistory } from "@/hooks/use-cycles";
+import { useAdminGroupDerived } from "@/hooks/use-admin-group-derived";
 
 type TabId = "overview" | "members" | "history" | "activity";
 
@@ -95,7 +95,7 @@ export default function AdminGroupDetailPage() {
         onChange={(id) => setActiveTab(id as TabId)}
       />
 
-      <div>
+      <div key={activeTab} className="pc-enter">
         {activeTab === "overview" && (
           <AdminGroupOverviewTab
             cycle={cycle}

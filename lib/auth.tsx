@@ -7,7 +7,7 @@ import {
   useMe,
   useSignup,
   useUpdateMe,
-} from "@/hooks/useAuth";
+} from "@/hooks/use-auth";
 import type { User } from "@/lib/api/types";
 
 interface AuthContextValue {

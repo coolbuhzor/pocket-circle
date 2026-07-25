@@ -97,7 +97,11 @@ export function Select({
           </SelectPrimitive.Content>
         </SelectPrimitive.Portal>
       </SelectPrimitive.Root>
-      {error && <p className="text-xs text-danger">{error}</p>}
+      {error && (
+        <p className="text-xs text-danger animate-[pc-fade_.2s_ease-out]">
+          {error}
+        </p>
+      )}
     </div>
   );
 }

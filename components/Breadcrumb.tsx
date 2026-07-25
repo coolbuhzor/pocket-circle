@@ -30,7 +30,7 @@ export function Breadcrumb({ items, className }: BreadcrumbProps) {
               {item.href && !isLast ? (
                 <button
                   type="button"
-                  className="hover:text-primary"
+                  className="transition-colors hover:text-primary"
                   onClick={() => router.push(item.href!)}
                 >
                   {item.label}

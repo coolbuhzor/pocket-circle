@@ -53,7 +53,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
           <div
             key={t.id}
             className={cn(
-              "pointer-events-auto flex w-full max-w-sm items-start gap-3 rounded-xl px-4 py-3 shadow-md",
+              "pointer-events-auto flex w-full max-w-sm items-start gap-3 rounded-xl px-4 py-3 shadow-lg animate-[pc-slide-in_.35s_cubic-bezier(.16,.84,.44,1)]",
               t.variant === "success" && "bg-primary text-white",
               t.variant === "error" && "bg-danger text-white",
               t.variant === "info" && "bg-secondary text-white",
@@ -63,7 +63,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
             <button
               type="button"
               onClick={() => dismiss(t.id)}
-              className="rounded-lg p-0.5 opacity-80 hover:opacity-100"
+              className="rounded-lg p-0.5 opacity-80 transition-opacity hover:opacity-100"
               aria-label="Dismiss"
             >
               <X className="h-4 w-4" />

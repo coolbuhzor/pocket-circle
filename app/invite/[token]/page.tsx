@@ -3,11 +3,11 @@
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { Users } from "lucide-react";
-import { Button } from "@/components/ui/Button";
-import { EmptyState } from "@/components/EmptyState";
+import { Button } from "@/components/ui/button";
+import { EmptyState } from "@/components/empty-state";
 import { useAuth } from "@/lib/auth";
-import { useToast } from "@/components/Toast";
-import { useAcceptInvite, useInvite } from "@/hooks/useInvites";
+import { useToast } from "@/components/toast";
+import { useAcceptInvite, useInvite } from "@/hooks/use-invites";
 import { ApiError } from "@/lib/api/client";
 import { formatNaira } from "@/lib/utils";
 
@@ -95,9 +95,13 @@ export default function InvitePage() {
 
   return (
     <div className="mx-auto flex w-full max-w-md flex-1 flex-col justify-center px-4 py-12">
-      <div className="rounded-2xl border border-primary-light/30 bg-surface p-6 shadow-sm sm:p-8">
-        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-primary-light/40 text-primary">
-          <Users className="h-7 w-7" />
+      <div className="rounded-2xl border border-primary-light/30 bg-surface p-6 shadow-lg animate-[pc-scale-in_.45s_cubic-bezier(.16,.84,.44,1)] sm:p-8">
+        <div className="relative mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-primary-light/40 text-primary">
+          <span
+            className="absolute inset-0 rounded-2xl bg-primary-light/50 animate-[pc-ring_2.8s_ease-out_infinite]"
+            aria-hidden
+          />
+          <Users className="relative h-7 w-7" />
         </div>
         <h1 className="mt-5 text-center font-display text-2xl font-semibold text-text">
           Join {groupName ?? "this group"}
@@ -128,7 +132,7 @@ export default function InvitePage() {
               New here?{" "}
               <Link
                 href={`/signup?next=/invite/${token}`}
-                className="font-medium text-secondary hover:underline"
+                className="font-medium text-secondary transition-colors hover:text-primary hover:underline"
               >
                 Sign up first
               </Link>

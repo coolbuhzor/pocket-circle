@@ -2,14 +2,15 @@
 
 import Link from "next/link";
 import { Bell } from "lucide-react";
-import { RequireAuth } from "@/components/RequireAuth";
-import { EmptyState } from "@/components/EmptyState";
-import { Button } from "@/components/ui/Button";
+import { RequireAuth } from "@/components/require-auth";
+import { EmptyState } from "@/components/empty-state";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   useMarkAllRead,
   useMarkNotificationRead,
   useNotifications,
-} from "@/hooks/useNotifications";
+} from "@/hooks/use-notifications";
 import type { Notification } from "@/lib/api/types";
 import { formatDate, cn } from "@/lib/utils";
 
@@ -58,10 +59,7 @@ function NotificationsContent() {
       {isLoading ? (
         <div className="mt-8 space-y-3">
           {[1, 2, 3].map((i) => (
-            <div
-              key={i}
-              className="h-20 animate-pulse rounded-xl bg-primary-light/20"
-            />
+            <Skeleton key={i} className="h-20 rounded-xl" />
           ))}
         </div>
       ) : items.length === 0 ? (
@@ -73,12 +71,12 @@ function NotificationsContent() {
           />
         </div>
       ) : (
-        <ul className="mt-8 space-y-2">
+        <ul className="pc-stagger mt-8 space-y-2">
           {items.map((note) => {
             const content = (
               <div
                 className={cn(
-                  "rounded-xl border px-4 py-3 transition-colors",
+                  "rounded-xl border px-4 py-3 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md",
                   note.read
                     ? "border-primary-light/20 bg-surface"
                     : "border-secondary/30 bg-secondary/5",
@@ -93,7 +91,10 @@ function NotificationsContent() {
                     </p>
                   </div>
                   {!note.read && (
-                    <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-accent" />
+                    <span className="relative mt-1 flex h-2 w-2 shrink-0">
+                      <span className="absolute inline-flex h-full w-full rounded-full bg-accent animate-[pc-ring_2.4s_ease-out_infinite]" />
+                      <span className="relative inline-flex h-2 w-2 rounded-full bg-accent" />
+                    </span>
                   )}
                 </div>
               </div>

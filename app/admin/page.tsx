@@ -3,11 +3,11 @@
 import {
   useAdminStatsGrowth,
   useAdminStatsOverview,
-} from "@/hooks/useAdmin";
+} from "@/hooks/use-admin";
 import { formatNaira } from "@/lib/utils";
-import { StatCard } from "@/components/admin/StatCard";
-import { GrowthChart } from "@/components/admin/GrowthChart";
-import { Skeleton } from "@/components/ui/Skeleton";
+import { StatCard } from "@/components/admin/stat-card";
+import { GrowthChart } from "@/components/admin/growth-chart";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function AdminOverviewPage() {
   const { data: stats, isLoading: statsLoading } = useAdminStatsOverview();
@@ -28,7 +28,7 @@ export default function AdminOverviewPage() {
 
   return (
     <div className="space-y-8">
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="pc-stagger grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard label="Total users" value={String(stats.totalUsers)} />
         <StatCard label="Total groups" value={String(stats.totalGroups)} />
         <StatCard

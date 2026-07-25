@@ -44,3 +44,228 @@ body {
 .font-mono {
   font-family: var(--font-jetbrains), ui-monospace, monospace;
 }
+
+@keyframes pc-float {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(0, -12px, 0);
+  }
+}
+
+@keyframes pc-drift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  33% {
+    transform: translate3d(28px, -20px, 0) scale(1.08);
+  }
+  66% {
+    transform: translate3d(-20px, 16px, 0) scale(0.94);
+  }
+}
+
+@keyframes pc-marquee {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+@keyframes pc-ring {
+  0% {
+    transform: scale(0.85);
+    opacity: 0.5;
+  }
+  80% {
+    transform: scale(1.6);
+    opacity: 0;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes pc-sheen {
+  from {
+    transform: translate3d(-130%, 0, 0);
+  }
+  to {
+    transform: translate3d(240%, 0, 0);
+  }
+}
+
+@keyframes pc-pop {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 10px, 0) scale(0.96);
+  }
+  60% {
+    transform: translate3d(0, -2px, 0) scale(1.01);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes pc-rise {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 14px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes pc-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes pc-scale-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 12px, 0) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes pc-slide-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 16px, 0) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes pc-shimmer {
+  from {
+    transform: translate3d(-100%, 0, 0);
+  }
+  to {
+    transform: translate3d(100%, 0, 0);
+  }
+}
+
+/* Entrance for a page or a single block. */
+.pc-enter {
+  animation: pc-rise 0.5s cubic-bezier(0.16, 0.84, 0.44, 1) both;
+}
+
+/* Entrance for a list or grid — children arrive one after the other. */
+.pc-stagger > * {
+  animation: pc-rise 0.5s cubic-bezier(0.16, 0.84, 0.44, 1) both;
+}
+
+.pc-stagger > *:nth-child(1) {
+  animation-delay: 40ms;
+}
+.pc-stagger > *:nth-child(2) {
+  animation-delay: 90ms;
+}
+.pc-stagger > *:nth-child(3) {
+  animation-delay: 140ms;
+}
+.pc-stagger > *:nth-child(4) {
+  animation-delay: 190ms;
+}
+.pc-stagger > *:nth-child(5) {
+  animation-delay: 240ms;
+}
+.pc-stagger > *:nth-child(6) {
+  animation-delay: 290ms;
+}
+.pc-stagger > *:nth-child(7) {
+  animation-delay: 340ms;
+}
+.pc-stagger > *:nth-child(n + 8) {
+  animation-delay: 380ms;
+}
+
+.pc-skeleton {
+  position: relative;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--color-primary-light) 25%, transparent);
+}
+
+.pc-skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translate3d(-100%, 0, 0);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.6),
+    transparent
+  );
+  animation: pc-shimmer 1.7s ease-in-out infinite;
+}
+
+/* Scroll-triggered entrance, toggled by the Reveal component. */
+.pc-reveal {
+  opacity: 0;
+  transform: translate3d(0, 22px, 0);
+  transition:
+    opacity 0.75s cubic-bezier(0.16, 0.84, 0.44, 1),
+    transform 0.75s cubic-bezier(0.16, 0.84, 0.44, 1);
+}
+
+.pc-reveal[data-visible="true"] {
+  opacity: 1;
+  transform: none;
+}
+
+.pc-marquee-track {
+  animation: pc-marquee 38s linear infinite;
+}
+
+.pc-marquee:hover .pc-marquee-track {
+  animation-play-state: paused;
+}
+
+.pc-grid {
+  background-image:
+    linear-gradient(to right, rgba(169, 163, 224, 0.28) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(169, 163, 224, 0.28) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(
+    ellipse 75% 65% at 50% 0%,
+    #000 35%,
+    transparent 100%
+  );
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pc-reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .pc-marquee-track,
+  .pc-enter,
+  .pc-stagger > *,
+  .pc-skeleton::after,
+  [class*="animate-[pc-"] {
+    animation: none;
+  }
+}

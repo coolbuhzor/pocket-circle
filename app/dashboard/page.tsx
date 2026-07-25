@@ -2,13 +2,13 @@
 
 import Link from "next/link";
 import { Plus, Users } from "lucide-react";
-import { RequireAuth } from "@/components/RequireAuth";
-import { GroupCard } from "@/components/GroupCard";
-import { EmptyState } from "@/components/EmptyState";
-import { Button } from "@/components/ui/Button";
-import { Skeleton } from "@/components/ui/Skeleton";
+import { RequireAuth } from "@/components/require-auth";
+import { GroupCard } from "@/components/group-card";
+import { EmptyState } from "@/components/empty-state";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/lib/auth";
-import { useGroups } from "@/hooks/useGroups";
+import { useGroups } from "@/hooks/use-groups";
 import { toGroupCardProps } from "@/lib/groups";
 
 function DashboardContent() {
@@ -51,7 +51,7 @@ function DashboardContent() {
           />
         </div>
       ) : (
-        <div className="mt-8 grid gap-4 sm:grid-cols-2">
+        <div className="pc-stagger mt-8 grid gap-4 sm:grid-cols-2">
           {groups.map((group) => {
             const props = toGroupCardProps(group);
             return <GroupCard key={props.id} {...props} />;

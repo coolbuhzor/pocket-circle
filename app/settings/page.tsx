@@ -3,11 +3,11 @@
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { RequireAuth } from "@/components/RequireAuth";
-import { Button } from "@/components/ui/Button";
-import { Input } from "@/components/ui/Input";
+import { RequireAuth } from "@/components/require-auth";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { useAuth } from "@/lib/auth";
-import { useToast } from "@/components/Toast";
+import { useToast } from "@/components/toast";
 
 const schema = z.object({
   name: z.string().min(2, "Enter your full name"),
@@ -91,18 +91,18 @@ function SettingsContent() {
           <legend className="text-sm font-medium text-text">
             Notifications
           </legend>
-          <label className="flex items-center gap-3 text-sm text-text">
+          <label className="flex cursor-pointer items-center gap-3 rounded-lg px-2 py-1.5 text-sm text-text transition-colors hover:bg-bg">
             <input
               type="checkbox"
-              className="h-4 w-4 rounded border-primary-light text-primary focus:ring-secondary"
+              className="h-4 w-4 rounded border-primary-light text-primary transition-colors focus:ring-secondary"
               {...register("notifyEmail")}
             />
             Email me when it&apos;s someone&apos;s turn
           </label>
-          <label className="flex items-center gap-3 text-sm text-text">
+          <label className="flex cursor-pointer items-center gap-3 rounded-lg px-2 py-1.5 text-sm text-text transition-colors hover:bg-bg">
             <input
               type="checkbox"
-              className="h-4 w-4 rounded border-primary-light text-primary focus:ring-secondary"
+              className="h-4 w-4 rounded border-primary-light text-primary transition-colors focus:ring-secondary"
               {...register("notifyWhatsApp")}
             />
             WhatsApp reminders (coming soon)

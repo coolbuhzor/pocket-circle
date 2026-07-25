@@ -5,9 +5,9 @@ import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { Bell, CircleDot, LogOut, Settings, User } from "lucide-react";
 import { useAuth } from "@/lib/auth";
-import { getInitials } from "@/lib/utils";
-import { Button } from "@/components/ui/Button";
-import { useUnreadCount } from "@/hooks/useNotifications";
+import { cn, getInitials } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { useUnreadCount } from "@/hooks/use-notifications";
 
 export function Navbar() {
   const { user, loading, logout } = useAuth();
@@ -30,7 +30,12 @@ export function Navbar() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-primary-light/30 bg-surface/90 backdrop-blur-md">
-      <div className="mx-auto flex h-16 max-w-5xl items-center justify-between px-4 sm:px-6">
+      <div
+        className={cn(
+          "mx-auto flex h-16 items-center justify-between px-4 sm:px-6",
+          pathname === "/" ? "max-w-6xl" : "max-w-5xl",
+        )}
+      >
         <Link
           href={user ? "/dashboard" : "/"}
           className="flex items-center gap-2"
@@ -49,26 +54,26 @@ export function Navbar() {
               <>
                 <Link
                   href="/dashboard"
-                  className="hidden text-sm font-medium text-text-muted hover:text-primary sm:inline"
+                  className="hidden text-sm font-medium text-text-muted transition-colors hover:text-primary sm:inline"
                 >
                   Dashboard
                 </Link>
                 {user.isSuperAdmin === true && (
                   <Link
                     href="/admin"
-                    className="hidden text-sm font-medium text-text-muted hover:text-primary sm:inline"
+                    className="hidden text-sm font-medium text-text-muted transition-colors hover:text-primary sm:inline"
                   >
                     Admin
                   </Link>
                 )}
                 <Link
                   href="/notifications"
-                  className="relative rounded-lg p-2 text-text-muted hover:bg-bg hover:text-primary"
+                  className="relative rounded-lg p-2 text-text-muted transition-colors hover:bg-bg hover:text-primary"
                   aria-label="Notifications"
                 >
                   <Bell className="h-5 w-5" />
                   {unread > 0 && (
-                    <span className="absolute right-1 top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-accent px-1 text-[10px] font-bold text-white">
+                    <span className="absolute right-1 top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-accent px-1 text-[10px] font-bold text-white animate-[pc-pop_.3s_ease-out]">
                       {unread > 9 ? "9+" : unread}
                     </span>
                   )}
@@ -77,7 +82,7 @@ export function Navbar() {
                   <button
                     type="button"
                     onClick={() => setMenuOpen((o) => !o)}
-                    className="flex items-center gap-2 rounded-xl p-1 hover:bg-bg"
+                    className="flex items-center gap-2 rounded-xl p-1 transition-colors hover:bg-bg"
                     aria-label="Profile menu"
                   >
                     <span className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-xs font-semibold text-white">
@@ -85,7 +90,7 @@ export function Navbar() {
                     </span>
                   </button>
                   {menuOpen && (
-                    <div className="absolute right-0 mt-2 w-52 rounded-xl border border-primary-light/40 bg-surface py-1 shadow-md">
+                    <div className="absolute right-0 mt-2 w-52 origin-top-right rounded-xl border border-primary-light/40 bg-surface py-1 shadow-lg animate-[pc-scale-in_.18s_ease-out]">
                       <div className="border-b border-primary-light/30 px-3 py-2">
                         <p className="truncate text-sm font-medium">
                           {user.name}
@@ -136,7 +141,7 @@ export function Navbar() {
                 <>
                   <Link
                     href="/how-it-works"
-                    className="hidden text-sm font-medium text-text-muted hover:text-primary sm:inline"
+                    className="hidden text-sm font-medium text-text-muted transition-colors hover:text-primary sm:inline"
                   >
                     How it works
                   </Link>

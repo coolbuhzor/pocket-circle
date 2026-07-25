@@ -1,7 +1,7 @@
 "use client";
 
-import { RequireSuperAdmin } from "@/components/RequireSuperAdmin";
-import { AdminNav } from "@/components/admin/AdminNav";
+import { RequireSuperAdmin } from "@/components/require-super-admin";
+import { AdminNav } from "@/components/admin/admin-nav";
 
 export default function AdminLayout({
   children,

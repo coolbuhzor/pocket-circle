@@ -1,12 +1,16 @@
 import Link from "next/link";
 import { Compass } from "lucide-react";
-import { Button } from "@/components/ui/Button";
+import { Button } from "@/components/ui/button";
 
 export default function NotFound() {
   return (
     <div className="mx-auto flex w-full max-w-lg flex-1 flex-col items-center justify-center px-4 py-16 text-center">
-      <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary-light/40 text-primary">
-        <Compass className="h-7 w-7" />
+      <div className="relative flex h-14 w-14 items-center justify-center rounded-2xl bg-primary-light/40 text-primary animate-[pc-float_5s_ease-in-out_infinite]">
+        <span
+          className="absolute inset-0 rounded-2xl bg-primary-light/50 animate-[pc-ring_3s_ease-out_infinite]"
+          aria-hidden
+        />
+        <Compass className="relative h-7 w-7" />
       </div>
       <h1 className="mt-5 font-display text-3xl font-semibold text-text">
         Page not found

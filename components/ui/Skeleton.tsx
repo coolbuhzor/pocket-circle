@@ -6,12 +6,6 @@ interface SkeletonProps {
 
 export function Skeleton({ className }: SkeletonProps) {
   return (
-    <div
-      className={cn(
-        "animate-pulse rounded-md bg-primary-light/25",
-        className,
-      )}
-      aria-hidden
-    />
+    <div className={cn("pc-skeleton rounded-md", className)} aria-hidden />
   );
 }

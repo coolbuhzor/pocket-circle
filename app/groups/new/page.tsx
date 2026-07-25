@@ -6,17 +6,17 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowLeft } from "lucide-react";
-import { RequireAuth } from "@/components/RequireAuth";
+import { RequireAuth } from "@/components/require-auth";
 import {
   CreateGroupDetailsStep,
   type CreateGroupDetailsValues,
-} from "@/components/groups/CreateGroupDetailsStep";
+} from "@/components/groups/create-group-details-step";
 import {
   InviteLinkStep,
   StepIndicator,
-} from "@/components/groups/InviteLinkStep";
-import { useToast } from "@/components/Toast";
-import { useCreateGroup } from "@/hooks/useGroups";
+} from "@/components/groups/invite-link-step";
+import { useToast } from "@/components/toast";
+import { useCreateGroup } from "@/hooks/use-groups";
 import { apiFetch } from "@/lib/api/client";
 
 const detailsSchema = z.object({
@@ -88,9 +88,9 @@ function CreateGroupContent() {
       <button
         type="button"
         onClick={() => (step === 1 ? router.push("/dashboard") : setStep(1))}
-        className="mb-4 inline-flex items-center gap-1 text-sm text-text-muted hover:text-primary"
+        className="group mb-4 inline-flex items-center gap-1 text-sm text-text-muted transition-colors hover:text-primary"
       >
-        <ArrowLeft className="h-4 w-4" />
+        <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
         Back
       </button>
 
@@ -105,27 +105,29 @@ function CreateGroupContent() {
 
       <StepIndicator step={step} />
 
-      {step === 1 && (
-        <CreateGroupDetailsStep
-          register={register}
-          control={control}
-          errors={errors}
-          frequency={watch("frequency")}
-          setValue={setValue}
-          inviteEmails={inviteEmails}
-          onInviteEmailsChange={setInviteEmails}
-          onSubmit={handleSubmit(onDetailsSubmit)}
-          submitting={isSubmitting || createGroup.isPending}
-        />
-      )}
+      <div key={step} className="pc-enter">
+        {step === 1 && (
+          <CreateGroupDetailsStep
+            register={register}
+            control={control}
+            errors={errors}
+            frequency={watch("frequency")}
+            setValue={setValue}
+            inviteEmails={inviteEmails}
+            onInviteEmailsChange={setInviteEmails}
+            onSubmit={handleSubmit(onDetailsSubmit)}
+            submitting={isSubmitting || createGroup.isPending}
+          />
+        )}
 
-      {step === 2 && (
-        <InviteLinkStep
-          inviteLink={inviteLink}
-          finishing={finishing}
-          onFinish={finish}
-        />
-      )}
+        {step === 2 && (
+          <InviteLinkStep
+            inviteLink={inviteLink}
+            finishing={finishing}
+            onFinish={finish}
+          />
+        )}
+      </div>
     </div>
   );
 }
