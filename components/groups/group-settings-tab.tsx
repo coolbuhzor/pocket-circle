@@ -1,11 +1,15 @@
 "use client";
 
+import { FormEvent, useState } from "react";
 import { Link as LinkIcon, Trash2 } from "lucide-react";
 import { CopyableField } from "@/components/copyable-field";
+import { InviteList } from "@/components/invite-list";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { AmountInput } from "@/components/ui/amount-input";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useGroupInvites } from "@/hooks/use-invites";
 import type { GroupFrequency } from "@/lib/api/types";
 import { FREQUENCY_OPTIONS } from "@/lib/groups";
 
@@ -16,6 +20,7 @@ export type GroupSettingsForm = {
 };
 
 interface GroupSettingsTabProps {
+  groupId: string;
   form: GroupSettingsForm;
   onChange: (form: GroupSettingsForm) => void;
   inviteLink: string;
@@ -23,11 +28,12 @@ interface GroupSettingsTabProps {
   generatingInvite?: boolean;
   deleting?: boolean;
   onSave: () => void;
-  onGenerateInvite: () => void;
+  onGenerateInvite: (email?: string) => void;
   onDelete: () => void;
 }
 
 export function GroupSettingsTab({
+  groupId,
   form,
   onChange,
   inviteLink,
@@ -38,6 +44,15 @@ export function GroupSettingsTab({
   onGenerateInvite,
   onDelete,
 }: GroupSettingsTabProps) {
+  const [inviteEmail, setInviteEmail] = useState("");
+  const { data: invites = [], isLoading: invitesLoading } =
+    useGroupInvites(groupId);
+
+  function handleInviteSubmit(event: FormEvent) {
+    event.preventDefault();
+    onGenerateInvite(inviteEmail.trim() || undefined);
+  }
+
   return (
     <div className="space-y-6">
       <div className="rounded-2xl border border-primary-light/30 bg-surface p-5 shadow-sm sm:p-6">
@@ -76,17 +91,22 @@ export function GroupSettingsTab({
       <div className="rounded-2xl border border-primary-light/30 bg-surface p-5 shadow-sm sm:p-6">
         <h2 className="font-display text-lg font-semibold">Invite members</h2>
         <p className="mt-1 text-sm text-text-muted">
-          Generate a link and share it with friends.
+          Generate a link to share, or optionally notify someone by email.
         </p>
-        <Button
-          variant="secondary"
-          className="mt-4"
-          onClick={onGenerateInvite}
-          disabled={generatingInvite}
-        >
-          <LinkIcon className="h-4 w-4" />
-          Generate invite link
-        </Button>
+        <form onSubmit={handleInviteSubmit} className="mt-4 space-y-4">
+          <Input
+            label="Invite by email (optional)"
+            type="email"
+            autoComplete="email"
+            value={inviteEmail}
+            onChange={(e) => setInviteEmail(e.target.value)}
+            placeholder="friend@email.com"
+          />
+          <Button type="submit" variant="secondary" disabled={generatingInvite}>
+            <LinkIcon className="h-4 w-4" />
+            {generatingInvite ? "Generating…" : "Generate invite link"}
+          </Button>
+        </form>
         {inviteLink && (
           <CopyableField
             className="mt-4"
@@ -95,6 +115,23 @@ export function GroupSettingsTab({
             mono={false}
           />
         )}
+
+        <div className="mt-6 border-t border-primary-light/25 pt-5">
+          <h3 className="text-sm font-semibold text-text">Invited</h3>
+          <p className="mt-0.5 text-xs text-text-muted">
+            People you&apos;ve invited to this group.
+          </p>
+          <div className="mt-3">
+            {invitesLoading ? (
+              <div className="space-y-2">
+                <Skeleton className="h-14 w-full rounded-xl" />
+                <Skeleton className="h-14 w-full rounded-xl" />
+              </div>
+            ) : (
+              <InviteList invites={invites} />
+            )}
+          </div>
+        </div>
       </div>
 
       <div className="rounded-2xl border border-danger/30 bg-danger/5 p-5 sm:p-6">

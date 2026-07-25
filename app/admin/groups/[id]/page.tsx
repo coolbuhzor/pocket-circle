@@ -6,6 +6,7 @@ import { Receipt } from "lucide-react";
 import { Tabs } from "@/components/tabs";
 import { ActivityFeed } from "@/components/activity-feed";
 import { EmptyState } from "@/components/empty-state";
+import { InviteList } from "@/components/invite-list";
 import { GroupPageHeader } from "@/components/groups/group-page-header";
 import { CycleHistoryTable } from "@/components/groups/cycle-history-table";
 import {
@@ -20,7 +21,7 @@ import { useActivity } from "@/hooks/use-invites";
 import { useContributions, useCycleHistory } from "@/hooks/use-cycles";
 import { useAdminGroupDerived } from "@/hooks/use-admin-group-derived";
 
-type TabId = "overview" | "members" | "history" | "activity";
+type TabId = "overview" | "members" | "history" | "activity" | "invites";
 
 export default function AdminGroupDetailPage() {
   const params = useParams<{ id: string }>();
@@ -36,6 +37,7 @@ export default function AdminGroupDetailPage() {
   const cycles =
     group?.cycles && group.cycles.length > 0 ? group.cycles : cycleHistory;
   const cycle = cycles.find((c) => c.status === "active") ?? null;
+  const invites = group?.invites ?? [];
   const { data: contributions = [] } = useContributions(cycle?.id);
 
   const derived = useAdminGroupDerived({
@@ -51,6 +53,7 @@ export default function AdminGroupDetailPage() {
     { id: "members", label: "Members" },
     { id: "history", label: "History" },
     { id: "activity", label: "Activity" },
+    { id: "invites", label: "Invites" },
   ];
 
   if (isLoading) {
@@ -123,6 +126,21 @@ export default function AdminGroupDetailPage() {
         )}
 
         {activeTab === "activity" && <ActivityFeed events={activity} />}
+
+        {activeTab === "invites" && (
+          <div className="rounded-xl border border-primary-light/30 bg-surface p-5 shadow-sm sm:p-6">
+            <h3 className="font-display text-lg font-semibold">Invites</h3>
+            <p className="mt-1 text-sm text-text-muted">
+              Invite links created for this group.
+            </p>
+            <div className="mt-4">
+              <InviteList
+                invites={invites}
+                emptyMessage="No invites have been created for this group."
+              />
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

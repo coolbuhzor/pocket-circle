@@ -6,15 +6,32 @@ import type {
   ActivityEvent,
   CreateInviteResponse,
   Group,
+  Invite,
   InvitePublic,
 } from "@/lib/api/types";
 
+export function useGroupInvites(groupId: string | undefined) {
+  return useQuery({
+    queryKey: ["invites", groupId],
+    queryFn: () => apiFetch<Invite[]>(`groups/${groupId}/invites`),
+    enabled: Boolean(groupId),
+  });
+}
+
 export function useCreateInvite(groupId: string) {
+  const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: () =>
-      apiFetch<CreateInviteResponse>(`groups/${groupId}/invites`, {
+    mutationFn: (body?: { email?: string }) => {
+      const email = body?.email?.trim();
+      return apiFetch<CreateInviteResponse>(`groups/${groupId}/invites`, {
         method: "POST",
-      }),
+        ...(email ? { body: JSON.stringify({ email }) } : {}),
+      });
+    },
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ["invites", groupId] });
+      void queryClient.invalidateQueries({ queryKey: ["group", groupId] });
+    },
   });
 }
 

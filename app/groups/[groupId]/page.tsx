@@ -186,6 +186,7 @@ function GroupDetailContent() {
 
         {activeTab === "settings" && derived.isAdmin && (
           <GroupSettingsTab
+            groupId={group.id}
             form={settingsForm}
             onChange={setSettingsForm}
             inviteLink={actions.inviteLink}

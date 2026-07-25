@@ -80,14 +80,25 @@ export function useGroupDetailActions({
     }
   }
 
-  async function handleGenerateInvite() {
+  async function handleGenerateInvite(email?: string) {
     try {
-      const invite = await createInvite.mutateAsync();
+      const invite = await createInvite.mutateAsync(
+        email ? { email } : undefined,
+      );
       const url =
         invite.url ?? `${window.location.origin}/invite/${invite.token}`;
       setInviteLink(url);
       await navigator.clipboard.writeText(url);
-      toast("Invite link copied");
+
+      if (invite.matchedExistingUser) {
+        toast("They'll see this invite in their notifications.");
+      } else if (email) {
+        toast(
+          "They don't have an account yet — send them this link so they can sign up and join.",
+        );
+      } else {
+        toast("Invite link created — share it however you like.");
+      }
     } catch (err) {
       toast(
         err instanceof Error ? err.message : "Could not create invite",

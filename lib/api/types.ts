@@ -104,12 +104,20 @@ export interface Contribution {
   displayStatus?: ContributionDisplayStatus;
 }
 
+export type InviteEffectiveStatus = "pending" | "accepted" | "expired";
+
 export interface Invite {
   token: string;
   groupId: string;
   invitedByUserId: string;
+  inviteeEmail?: string | null;
   expiresAt: string;
   status: "active" | "expired" | "accepted";
+  /** Derived for UI: active → pending; may also flip to expired by date. */
+  effectiveStatus?: InviteEffectiveStatus;
+  invitedBy?: Pick<User, "id" | "name">;
+  inviterName?: string;
+  createdAt?: string;
 }
 
 /** Public invite view (may nest group + inviter). */
@@ -117,6 +125,7 @@ export interface InvitePublic {
   token: string;
   groupId?: string;
   invitedByUserId?: string;
+  inviteeEmail?: string;
   expiresAt: string;
   status: Invite["status"];
   group?: Pick<Group, "id" | "name" | "contributionAmount" | "frequency">;
@@ -154,6 +163,7 @@ export type NotificationType =
   | "payment_disputed"
   | "reminder"
   | "invite_accepted"
+  | "group_invite"
   | "cycle_started";
 
 export interface Notification {
@@ -192,6 +202,8 @@ export interface CreateInviteResponse {
   token: string;
   expiresAt?: string;
   url?: string;
+  inviteeEmail?: string;
+  matchedExistingUser?: boolean;
 }
 
 export interface PaginatedMeta {

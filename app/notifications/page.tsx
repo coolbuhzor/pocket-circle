@@ -67,7 +67,7 @@ function NotificationsContent() {
           <EmptyState
             icon={<Bell className="h-6 w-6" />}
             title="No notifications yet"
-            message="When someone uploads a receipt or it's your turn, you'll see it here."
+            message="When someone invites you to a group, uploads a receipt, or it's your turn, you'll see it here."
           />
         </div>
       ) : (

@@ -10,10 +10,11 @@ import type {
   GroupListItem,
 } from "@/lib/api/types";
 
-export function useGroups() {
+export function useGroups(options?: { enabled?: boolean }) {
   return useQuery({
     queryKey: ["groups"],
     queryFn: () => apiFetch<GroupListItem[]>("groups"),
+    enabled: options?.enabled ?? true,
   });
 }
 
