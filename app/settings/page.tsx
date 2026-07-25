@@ -372,7 +372,6 @@ function PreferencesPanel({ user }: { user: User }) {
                   errors.bankCode?.message ?? errors.bankName?.message
                 }
                 accountError={errors.accountNumber?.message}
-                authenticated
               />
             )}
           />

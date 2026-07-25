@@ -13,8 +13,6 @@ interface BankDetailsFieldsProps {
   onAccountNumberChange: (value: string) => void;
   bankError?: string;
   accountError?: string;
-  /** Use authenticated proxy when a session exists (settings). */
-  authenticated?: boolean;
 }
 
 const RESOLVE_DEBOUNCE_MS = 450;
@@ -26,11 +24,8 @@ export function BankDetailsFields({
   onAccountNumberChange,
   bankError,
   accountError,
-  authenticated = false,
 }: BankDetailsFieldsProps) {
-  const { data: banks = [], isLoading: banksLoading } = useBanks({
-    authenticated,
-  });
+  const { data: banks = [], isLoading: banksLoading } = useBanks();
 
   const debouncedAccount = useDebouncedValue(accountNumber, RESOLVE_DEBOUNCE_MS);
   const debouncedBankCode = useDebouncedValue(bankCode, RESOLVE_DEBOUNCE_MS);
@@ -41,7 +36,7 @@ export function BankDetailsFields({
   const { data: resolved, isFetching: resolving } = useResolveAccount(
     debouncedAccount,
     debouncedBankCode,
-    { authenticated, enabled: resolveReady },
+    { enabled: resolveReady },
   );
 
   const accountName = resolved?.accountName;

@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { apiFetch, ApiError } from "@/lib/api/client";
+import { apiFetch } from "@/lib/api/client";
 import type { Bank, ResolveAccountResult } from "@/lib/api/types";
 
 function normalizeBanks(payload: unknown): Bank[] {
@@ -44,54 +44,11 @@ function normalizeResolve(payload: unknown): ResolveAccountResult | null {
   };
 }
 
-async function fetchBanksPublic(): Promise<Bank[]> {
-  const res = await fetch("/api/banks");
-  if (!res.ok) {
-    throw new ApiError(res.status, "Could not load banks");
-  }
-  const json: unknown = await res.json();
-  return normalizeBanks(json);
-}
-
-async function fetchBanksAuthed(): Promise<Bank[]> {
-  const json = await apiFetch<unknown>("banks");
-  return normalizeBanks(json);
-}
-
-async function resolveAccountPublic(
-  accountNumber: string,
-  bankCode: string,
-): Promise<ResolveAccountResult | null> {
-  const qs = new URLSearchParams({ accountNumber, bankCode });
-  const res = await fetch(`/api/banks/resolve?${qs.toString()}`);
-  if (!res.ok) return null;
-  const json: unknown = await res.json();
-  return normalizeResolve(json);
-}
-
-async function resolveAccountAuthed(
-  accountNumber: string,
-  bankCode: string,
-): Promise<ResolveAccountResult | null> {
-  try {
-    const qs = new URLSearchParams({ accountNumber, bankCode });
-    const json = await apiFetch<unknown>(`banks/resolve?${qs.toString()}`);
-    return normalizeResolve(json);
-  } catch {
-    return null;
-  }
-}
-
-/**
- * Fetch Nigerian bank list once. Uses the public BFF by default (signup);
- * pass `authenticated` when a session cookie is available.
- */
-export function useBanks(options?: { authenticated?: boolean }) {
-  const authenticated = options?.authenticated ?? false;
-
+/** Nigerian bank list — public via BFF; cached client-side for 1 hour. */
+export function useBanks() {
   return useQuery({
-    queryKey: ["banks", authenticated ? "auth" : "public"],
-    queryFn: authenticated ? fetchBanksAuthed : fetchBanksPublic,
+    queryKey: ["banks"],
+    queryFn: async () => normalizeBanks(await apiFetch<unknown>("banks")),
     staleTime: 60 * 60 * 1000,
     retry: 1,
   });
@@ -104,23 +61,24 @@ export function useBanks(options?: { authenticated?: boolean }) {
 export function useResolveAccount(
   accountNumber: string,
   bankCode: string,
-  options?: { authenticated?: boolean; enabled?: boolean },
+  options?: { enabled?: boolean },
 ) {
-  const authenticated = options?.authenticated ?? false;
   const ready =
     Boolean(bankCode) && /^\d{10}$/.test(accountNumber) && options?.enabled !== false;
 
   return useQuery({
-    queryKey: ["banks", "resolve", bankCode, accountNumber, authenticated],
-    queryFn: () =>
-      authenticated
-        ? resolveAccountAuthed(accountNumber, bankCode)
-        : resolveAccountPublic(accountNumber, bankCode),
+    queryKey: ["banks", "resolve", bankCode, accountNumber],
+    queryFn: async () => {
+      try {
+        const qs = new URLSearchParams({ accountNumber, bankCode });
+        const json = await apiFetch<unknown>(`banks/resolve?${qs.toString()}`);
+        return normalizeResolve(json);
+      } catch {
+        return null;
+      }
+    },
     enabled: ready,
     staleTime: 5 * 60 * 1000,
     retry: false,
-    // Debounce: wait until the query has been enabled for a beat before fetching.
-    // React Query refetchOnMount + enabled flip handles most cases; we also
-    // rely on the account field only flipping to 10 digits once "complete".
   });
 }
