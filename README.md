@@ -23,7 +23,7 @@ pnpm dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
-`BACKEND_URL` must **not** use a `NEXT_PUBLIC_` prefix — the browser never talks to the NestJS API directly.
+`BACKEND_URL` must **not** use a `NEXT_PUBLIC_` prefix — the browser never talks to the NestJS API directly. Set it to the API **origin only** (no `/api/v1`); the BFF appends the versioned prefix.
 
 ## Architecture
 
@@ -32,10 +32,9 @@ Browser (UI + React Query)
         │  same-origin fetch
         ▼
 Next.js Route Handlers
-  /api/auth/*     → login/signup set httpOnly pc_token cookie; return { user } only
-  /api/v1/*       → attach Authorization: Bearer from cookie → BACKEND_URL
-                    (GET banks + banks/resolve are public — no cookie)
-  /api/invites/*  → public invite lookup (no cookie)
+  /api/auth/*  → login/signup set httpOnly pc_token cookie; return { user } only
+  /api/v1/*    → attach Authorization: Bearer from cookie → BACKEND_URL/api/v1/*
+                 (public GETs: banks, banks/resolve, invites/:token)
         │
         ▼
 NestJS API (BACKEND_URL/api/v1/…)
@@ -77,9 +76,9 @@ JWT never enters `localStorage`, `sessionStorage`, or client React state.
 ## Project structure
 
 ```
-app/api/             # BFF: auth + catch-all proxy
+app/api/             # BFF: auth + /api/v1 catch-all proxy
 hooks/               # React Query hooks by domain
-lib/api/             # client helper + types + server BACKEND_URL
+lib/api/             # client, constants (API_PREFIX), types, server BACKEND_URL
 components/          # UI + domain components
 proxy.ts             # Cookie presence gate for protected pages (Next.js 16)
 ```

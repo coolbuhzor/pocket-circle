@@ -1,7 +1,6 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
 import { apiFetch, authFetch } from "@/lib/api/client";
 import type { User } from "@/lib/api/types";
 
@@ -25,8 +24,9 @@ export function useLogin() {
     mutationFn: (body: { email: string; password: string }) =>
       authFetch<{ user: User }>("login", body),
     onSuccess: (data) => {
+      // Seed cache only — do not invalidate/refetch /me here. A refetch can
+      // race the Set-Cookie handoff and briefly clear the session on the client.
       queryClient.setQueryData(["me"], data.user);
-      void queryClient.invalidateQueries({ queryKey: ["me"] });
     },
   });
 }
@@ -46,19 +46,17 @@ export function useSignup() {
     }) => authFetch<{ user: User }>("signup", body),
     onSuccess: (data) => {
       queryClient.setQueryData(["me"], data.user);
-      void queryClient.invalidateQueries({ queryKey: ["me"] });
     },
   });
 }
 
 export function useLogout() {
   const queryClient = useQueryClient();
-  const router = useRouter();
   return useMutation({
     mutationFn: () => authFetch("logout"),
     onSuccess: () => {
       queryClient.clear();
-      router.push("/login");
+      window.location.assign("/login");
     },
   });
 }

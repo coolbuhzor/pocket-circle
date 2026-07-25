@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { redirect, useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -20,8 +20,7 @@ const schema = z.object({
 type FormValues = z.infer<typeof schema>;
 
 function LoginForm() {
-  const { login, user, loading } = useAuth();
-  const router = useRouter();
+  const { login } = useAuth();
   const searchParams = useSearchParams();
   const next = searchParams.get("next") || "/dashboard";
   const { toast } = useToast();
@@ -35,10 +34,6 @@ function LoginForm() {
     resolver: zodResolver(schema),
   });
 
-  if (!loading && user) {
-    redirect(next);
-  }
-
   async function onSubmit(values: FormValues) {
     const result = await login(values.email, values.password);
     if (result.error) {
@@ -46,7 +41,9 @@ function LoginForm() {
       return;
     }
     toast("Welcome back");
-    router.push(next);
+    // Full navigation so the new httpOnly session cookie is on the next
+    // document request — soft nav left a half-logged-in state.
+    window.location.assign(next);
   }
 
   return (

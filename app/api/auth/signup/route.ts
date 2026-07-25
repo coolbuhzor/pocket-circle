@@ -1,9 +1,8 @@
-import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import {
   AUTH_COOKIE,
   AUTH_COOKIE_OPTIONS,
-  getBackendUrl,
+  backendApiUrl,
 } from "@/lib/api/backend";
 
 export async function POST(request: Request) {
@@ -14,7 +13,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ message: "Invalid JSON body" }, { status: 400 });
   }
 
-  const res = await fetch(`${getBackendUrl()}/api/v1/auth/signup`, {
+  const res = await fetch(backendApiUrl("auth/signup"), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
@@ -41,8 +40,7 @@ export async function POST(request: Request) {
     );
   }
 
-  const cookieStore = await cookies();
-  cookieStore.set(AUTH_COOKIE, accessToken, AUTH_COOKIE_OPTIONS);
-
-  return NextResponse.json({ user });
+  const response = NextResponse.json({ user });
+  response.cookies.set(AUTH_COOKIE, accessToken, AUTH_COOKIE_OPTIONS);
+  return response;
 }

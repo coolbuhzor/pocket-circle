@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
-import { AUTH_COOKIE, getBackendUrl } from "@/lib/api/backend";
+import { AUTH_COOKIE, backendApiUrl } from "@/lib/api/backend";
 
 /**
  * Soft session check — returns `{ user: null }` when unauthenticated
@@ -14,7 +14,7 @@ export async function GET() {
     return NextResponse.json({ user: null });
   }
 
-  const res = await fetch(`${getBackendUrl()}/api/v1/me`, {
+  const res = await fetch(backendApiUrl("me"), {
     headers: { Authorization: `Bearer ${token}` },
   });
 
