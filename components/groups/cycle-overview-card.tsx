@@ -1,3 +1,4 @@
+import { BadgeCheck } from "lucide-react";
 import { RotationCircle } from "@/components/rotation-circle";
 import { CopyableField } from "@/components/copyable-field";
 import { cn, formatDate } from "@/lib/utils";
@@ -11,6 +12,7 @@ interface CycleOverviewCardProps {
   collectorName: string;
   bankName?: string | null;
   accountNumber?: string | null;
+  bankVerified?: boolean | null;
   size?: "sm" | "md";
   className?: string;
 }
@@ -24,6 +26,7 @@ export function CycleOverviewCard({
   collectorName,
   bankName,
   accountNumber,
+  bankVerified,
   size = "md",
   className,
 }: CycleOverviewCardProps) {
@@ -54,8 +57,17 @@ export function CycleOverviewCard({
             <p className="text-xs font-medium uppercase tracking-wide text-text-muted">
               Bank
             </p>
-            <p className="mt-1 text-sm font-medium text-text">
-              {bankName ?? "—"}
+            <p className="mt-1 flex flex-wrap items-center gap-1.5 text-sm font-medium text-text">
+              <span>{bankName ?? "—"}</span>
+              {bankVerified && (
+                <span
+                  className="inline-flex items-center gap-0.5 text-xs font-medium text-secondary"
+                  title="Bank account verified"
+                >
+                  <BadgeCheck className="h-3.5 w-3.5" aria-hidden />
+                  Verified
+                </span>
+              )}
             </p>
           </div>
           <CopyableField

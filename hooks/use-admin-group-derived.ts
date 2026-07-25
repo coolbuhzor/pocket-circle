@@ -16,6 +16,7 @@ import {
   memberDisplayName,
   type CycleHistoryRow,
 } from "@/lib/groups";
+import { getFullName } from "@/lib/user-name";
 
 type AdminMember = {
   userId: string;
@@ -54,10 +55,19 @@ export function useAdminGroupDerived({
     name: memberDisplayName(m.user),
   }));
 
-  const collector = cycle
-    ? (orderedMembers.find((m) => m.userId === cycle.collectorUserId)?.user ??
-      null)
-    : null;
+  const collector = (() => {
+    if (!cycle) return null;
+    const user = orderedMembers.find(
+      (m) => m.userId === cycle.collectorUserId,
+    )?.user;
+    if (!user) return null;
+    return {
+      name: getFullName(user),
+      bankName: user.bankName,
+      accountNumber: user.accountNumber,
+      bankVerified: user.bankVerified,
+    };
+  })();
 
   const paymentRows: AdminPaymentRow[] = useMemo(() => {
     if (!cycle) return [];

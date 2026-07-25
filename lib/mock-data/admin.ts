@@ -50,10 +50,20 @@ function groupConfirmedVolume(groupId: string): number {
     .reduce((sum, c) => sum + c.amount, 0);
 }
 
+function fullName(user: User): string {
+  const parts = [user.firstName, user.middleName, user.lastName]
+    .map((p) => p?.trim())
+    .filter(Boolean);
+  return parts.length ? parts.join(" ") : (user.name ?? "Unknown");
+}
+
 function toUserRow(user: User): AdminUserRow {
   return {
     id: user.id,
-    name: user.name,
+    firstName: user.firstName,
+    lastName: user.lastName,
+    middleName: user.middleName,
+    name: fullName(user),
     email: user.email,
     createdAt: user.createdAt ?? "2025-01-01T00:00:00.000Z",
     lastLoginAt: user.lastLoginAt ?? null,
@@ -79,7 +89,7 @@ function toGroupRow(group: Group): AdminGroupRow {
     contributionAmount: group.contributionAmount,
     frequency: group.frequency,
     currentCycleNumber: active?.cycleNumber ?? null,
-    currentCollectorName: collector?.name ?? null,
+    currentCollectorName: collector ? fullName(collector) : null,
     totalConfirmedVolume: groupConfirmedVolume(group.id),
     createdAt: group.createdAt,
   };
@@ -172,10 +182,10 @@ export async function getAdminUsers(params?: {
 
   let rows = store.users.map(toUserRow);
   if (q) {
-    rows = rows.filter(
-      (r) =>
-        r.name.toLowerCase().includes(q) || r.email.toLowerCase().includes(q),
-    );
+    rows = rows.filter((r) => {
+      const name = (r.name ?? `${r.firstName ?? ""} ${r.lastName ?? ""}`).toLowerCase();
+      return name.includes(q) || r.email.toLowerCase().includes(q);
+    });
   }
   rows.sort(
     (a, b) =>

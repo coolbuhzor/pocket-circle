@@ -1,19 +1,11 @@
 "use client";
 
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { redirect } from "next/navigation";
 import { useAuth } from "@/lib/auth";
 import { RequireAuth } from "@/components/require-auth";
 
 function SuperAdminGate({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (!loading && user && user.isSuperAdmin !== true) {
-      router.replace("/dashboard");
-    }
-  }, [user, loading, router]);
 
   if (loading) {
     return (
@@ -23,7 +15,9 @@ function SuperAdminGate({ children }: { children: React.ReactNode }) {
     );
   }
 
-  if (!user || user.isSuperAdmin !== true) return null;
+  if (!user || user.isSuperAdmin !== true) {
+    redirect("/dashboard");
+  }
 
   return <>{children}</>;
 }

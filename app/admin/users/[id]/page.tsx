@@ -12,6 +12,7 @@ import {
 } from "@/components/admin/user-detail-columns";
 import { DataTable } from "@/components/ui/data-table";
 import { Skeleton } from "@/components/ui/skeleton";
+import { getFullName } from "@/lib/user-name";
 
 export default function AdminUserDetailPage() {
   const params = useParams<{ id: string }>();
@@ -45,7 +46,7 @@ export default function AdminUserDetailPage() {
       <Breadcrumb
         items={[
           { label: "Users", href: "/admin/users" },
-          { label: user.name },
+          { label: getFullName(user) },
         ]}
       />
       <AdminUserHeader user={user} />

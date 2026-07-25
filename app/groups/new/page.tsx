@@ -18,6 +18,7 @@ import {
 import { useToast } from "@/components/toast";
 import { useCreateGroup } from "@/hooks/use-groups";
 import { apiFetch } from "@/lib/api/client";
+import type { InviteSentResult } from "@/lib/api/types";
 
 const detailsSchema = z.object({
   name: z.string().min(2, "Give your group a name"),
@@ -35,6 +36,7 @@ function CreateGroupContent() {
   const [createdGroupId, setCreatedGroupId] = useState<string | null>(null);
   const [inviteEmails, setInviteEmails] = useState<string[]>([]);
   const [inviteLink, setInviteLink] = useState("");
+  const [invitesSent, setInvitesSent] = useState<InviteSentResult[]>([]);
   const [finishing, setFinishing] = useState(false);
 
   const {
@@ -60,6 +62,7 @@ function CreateGroupContent() {
         memberEmails: inviteEmails,
       });
       setCreatedGroupId(group.id);
+      setInvitesSent(group.invitesSent ?? []);
       const invite = await apiFetch<{ token: string; url?: string }>(
         `groups/${group.id}/invites`,
         { method: "POST" },
@@ -123,6 +126,7 @@ function CreateGroupContent() {
         {step === 2 && (
           <InviteLinkStep
             inviteLink={inviteLink}
+            invitesSent={invitesSent}
             finishing={finishing}
             onFinish={finish}
           />

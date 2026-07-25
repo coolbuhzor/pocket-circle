@@ -1,19 +1,23 @@
+import { BadgeCheck } from "lucide-react";
 import type { User } from "@/lib/api/types";
 import { formatDate, getInitials } from "@/lib/utils";
+import { getFullName } from "@/lib/user-name";
 
 interface AdminUserHeaderProps {
   user: User;
 }
 
 export function AdminUserHeader({ user }: AdminUserHeaderProps) {
+  const fullName = getFullName(user);
+
   return (
     <div className="flex flex-wrap items-start gap-4 rounded-xl border border-primary-light/40 bg-surface p-4 sm:p-5">
       <span className="flex h-14 w-14 items-center justify-center rounded-full bg-primary text-sm font-semibold text-white">
-        {getInitials(user.name)}
+        {getInitials(fullName)}
       </span>
       <div className="min-w-0 flex-1">
         <h2 className="font-display text-xl font-semibold text-text">
-          {user.name}
+          {fullName}
         </h2>
         <p className="text-sm text-text-muted">{user.email}</p>
         <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-2 lg:grid-cols-4">
@@ -37,7 +41,18 @@ export function AdminUserHeader({ user }: AdminUserHeaderProps) {
             <dt className="text-xs uppercase tracking-wide text-text-muted">
               Bank
             </dt>
-            <dd className="mt-0.5">{user.bankName}</dd>
+            <dd className="mt-0.5 flex items-center gap-1.5">
+              {user.bankName}
+              {user.bankVerified && (
+                <span
+                  className="inline-flex items-center gap-0.5 text-xs font-medium text-secondary"
+                  title="Bank account verified"
+                >
+                  <BadgeCheck className="h-3.5 w-3.5" aria-hidden />
+                  Verified
+                </span>
+              )}
+            </dd>
           </div>
           <div>
             <dt className="text-xs uppercase tracking-wide text-text-muted">

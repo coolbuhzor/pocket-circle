@@ -1,15 +1,18 @@
 "use client";
 
 import { useParams, useRouter } from "next/navigation";
+import { useState } from "react";
 import { Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/empty-state";
 import { useAuth } from "@/lib/auth";
 import { useToast } from "@/components/toast";
+import { useLogout } from "@/hooks/use-auth";
 import { useAcceptInvite, useInvite } from "@/hooks/use-invites";
 import { useGroups } from "@/hooks/use-groups";
 import { ApiError } from "@/lib/api/client";
 import { formatNaira } from "@/lib/utils";
+import { getFullName } from "@/lib/user-name";
 
 const INVALID_INVITE_MESSAGE =
   "This invite link has expired or is invalid — ask the group admin to send a new one";
@@ -20,6 +23,8 @@ export default function InvitePage() {
   const { user, loading: authLoading } = useAuth();
   const { toast } = useToast();
   const router = useRouter();
+  const logout = useLogout();
+  const [mismatchMessage, setMismatchMessage] = useState<string | null>(null);
 
   const {
     data: invite,
@@ -43,8 +48,9 @@ export default function InvitePage() {
   const groupName = invite?.group?.name ?? invite?.groupName;
   const amount =
     invite?.group?.contributionAmount ?? invite?.contributionAmount;
-  const inviterName =
-    invite?.invitedBy?.name ?? invite?.inviterName ?? "Someone";
+  const inviterName = invite?.invitedBy
+    ? getFullName(invite.invitedBy)
+    : (invite?.inviterName ?? "Someone");
 
   const alreadyMember = Boolean(
     user && groupId && groups?.some((g) => g.id === groupId),
@@ -52,11 +58,16 @@ export default function InvitePage() {
   const invalid = fetchFailed || !invite || (inviteInactive && !alreadyMember);
 
   async function handleAccept() {
+    setMismatchMessage(null);
     try {
       const joined = await acceptInvite.mutateAsync();
       toast("You're in the group");
       router.push(`/groups/${joined.id}`);
     } catch (err) {
+      if (err instanceof ApiError && err.status === 403) {
+        setMismatchMessage(err.message);
+        return;
+      }
       const already =
         err instanceof ApiError &&
         (err.status === 409 || /already/i.test(err.message));
@@ -71,6 +82,14 @@ export default function InvitePage() {
       if (already && groupId) {
         router.push(`/groups/${groupId}`);
       }
+    }
+  }
+
+  async function handleLogoutAndRetry() {
+    try {
+      await logout.mutateAsync();
+    } finally {
+      router.push(`/login?next=${encodeURIComponent(`/invite/${token}`)}`);
     }
   }
 
@@ -132,7 +151,21 @@ export default function InvitePage() {
         )}
 
         <div className="mt-8 space-y-3">
-          {alreadyMember && groupId ? (
+          {mismatchMessage ? (
+            <>
+              <div className="rounded-xl border border-danger/30 bg-danger/5 px-4 py-3 text-sm text-danger">
+                {mismatchMessage}
+              </div>
+              <Button
+                fullWidth
+                variant="secondary"
+                onClick={handleLogoutAndRetry}
+                disabled={logout.isPending}
+              >
+                {logout.isPending ? "Logging out…" : "Log out and try again"}
+              </Button>
+            </>
+          ) : alreadyMember && groupId ? (
             <Button fullWidth onClick={() => router.push(`/groups/${groupId}`)}>
               Go to group
             </Button>

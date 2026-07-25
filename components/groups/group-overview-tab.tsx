@@ -33,6 +33,7 @@ interface GroupOverviewTabProps {
     name: string;
     bankName?: string | null;
     accountNumber?: string | null;
+    bankVerified?: boolean | null;
   };
   currentUserId?: string;
   isCollector: boolean;
@@ -77,6 +78,7 @@ export function GroupOverviewTab({
         collectorName={collector.name}
         bankName={collector.bankName}
         accountNumber={collector.accountNumber}
+        bankVerified={collector.bankVerified}
       />
 
       <div className="rounded-2xl border border-primary-light/30 bg-surface p-5 shadow-sm">

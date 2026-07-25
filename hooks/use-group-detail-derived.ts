@@ -13,6 +13,7 @@ import {
   memberStatus,
   type CycleHistoryRow,
 } from "@/lib/groups";
+import { getFullName } from "@/lib/user-name";
 
 interface UseGroupDetailDerivedOptions {
   group?: GroupDetail | null;
@@ -67,22 +68,34 @@ export function useGroupDetailDerived({
     name: memberDisplayName(m),
   }));
 
-  const collector =
-    group?.whoseTurn ??
-    (cycle
-      ? (() => {
-          const m = orderedMembers.find(
-            (mem) => mem.userId === cycle.collectorUserId,
-          );
-          if (!m) return null;
-          return {
-            id: m.userId,
-            name: memberDisplayName(m),
-            bankName: m.user?.bankName,
-            accountNumber: m.user?.accountNumber,
-          };
-        })()
-      : null);
+  const collector = (() => {
+    if (group?.whoseTurn) {
+      const turn = group.whoseTurn;
+      const member = orderedMembers.find(
+        (m) => m.userId === turn.id || m.user?.id === turn.id,
+      );
+      const turnName = getFullName(turn);
+      return {
+        id: turn.id,
+        name: turnName !== "Unknown" ? turnName : memberDisplayName(member),
+        bankName: turn.bankName ?? member?.user?.bankName,
+        accountNumber: turn.accountNumber ?? member?.user?.accountNumber,
+        bankVerified: turn.bankVerified ?? member?.user?.bankVerified,
+      };
+    }
+    if (!cycle) return null;
+    const m = orderedMembers.find(
+      (mem) => mem.userId === cycle.collectorUserId,
+    );
+    if (!m) return null;
+    return {
+      id: m.userId,
+      name: memberDisplayName(m),
+      bankName: m.user?.bankName,
+      accountNumber: m.user?.accountNumber,
+      bankVerified: m.user?.bankVerified,
+    };
+  })();
 
   const nextCollector = useMemo(() => {
     if (!cycle || orderedMembers.length === 0) return null;

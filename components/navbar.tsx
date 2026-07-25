@@ -2,11 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { Bell, CircleDot, LogOut, Settings, User } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { cn, getInitials } from "@/lib/utils";
+import { getFullName } from "@/lib/user-name";
 import { Button } from "@/components/ui/button";
+import { useClickOutside } from "@/hooks/use-click-outside";
 import { useUnreadCount } from "@/hooks/use-notifications";
 
 export function Navbar() {
@@ -16,15 +18,7 @@ export function Navbar() {
   const menuRef = useRef<HTMLDivElement>(null);
   const { data: unread = 0 } = useUnreadCount(Boolean(user));
 
-  useEffect(() => {
-    function handleClick(e: MouseEvent) {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
-        setMenuOpen(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClick);
-    return () => document.removeEventListener("mousedown", handleClick);
-  }, []);
+  useClickOutside(menuRef, () => setMenuOpen(false), menuOpen);
 
   const isAuthPage = pathname === "/login" || pathname === "/signup";
 
@@ -86,14 +80,14 @@ export function Navbar() {
                     aria-label="Profile menu"
                   >
                     <span className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-xs font-semibold text-white">
-                      {getInitials(user.name)}
+                      {getInitials(getFullName(user))}
                     </span>
                   </button>
                   {menuOpen && (
                     <div className="absolute right-0 mt-2 w-52 origin-top-right rounded-xl border border-primary-light/40 bg-surface py-1 shadow-lg animate-[pc-scale-in_.18s_ease-out]">
                       <div className="border-b border-primary-light/30 px-3 py-2">
                         <p className="truncate text-sm font-medium">
-                          {user.name}
+                          {getFullName(user)}
                         </p>
                         <p className="truncate text-xs text-text-muted">
                           {user.email}

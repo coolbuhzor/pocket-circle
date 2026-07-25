@@ -1,11 +1,30 @@
 /** Shared domain + API response types for the real backend. */
 
+export interface Bank {
+  name: string;
+  code: string;
+  slug?: string;
+  active?: boolean;
+}
+
+export interface ResolveAccountResult {
+  accountName: string;
+  accountNumber?: string;
+  bankId?: string | number;
+}
+
 export interface User {
   id: string;
-  name: string;
+  firstName: string;
+  lastName: string;
+  middleName?: string | null;
+  /** Legacy computed full name — prefer getFullName(). */
+  name?: string;
   email: string;
   bankName: string;
+  bankCode?: string | null;
   accountNumber: string;
+  bankVerified?: boolean;
   notifyEmail?: boolean;
   notifyWhatsApp?: boolean;
   isSuperAdmin?: boolean;
@@ -25,7 +44,16 @@ export interface GroupMember {
 export interface GroupMemberWithUser extends GroupMember {
   user?: Pick<
     User,
-    "id" | "name" | "email" | "bankName" | "accountNumber"
+    | "id"
+    | "firstName"
+    | "lastName"
+    | "middleName"
+    | "name"
+    | "email"
+    | "bankName"
+    | "bankCode"
+    | "accountNumber"
+    | "bankVerified"
   >;
   name?: string;
   displayStatus?: ContributionDisplayStatus;
@@ -53,11 +81,27 @@ export interface GroupListItem extends Group {
   myContributionStatus?: ContributionDisplayStatus;
 }
 
+/** Per-address outcome when inviting multiple emails on group creation. */
+export interface InviteSentResult {
+  email: string;
+  matchedExistingUser: boolean;
+}
+
+/** POST /groups response — group plus the outcome of any `memberEmails` invites. */
+export interface CreateGroupResponse extends Group {
+  invitesSent?: InviteSentResult[];
+}
+
 export interface WhoseTurn {
   id: string;
-  name: string;
+  name?: string;
+  firstName?: string;
+  lastName?: string;
+  middleName?: string | null;
   bankName?: string;
+  bankCode?: string | null;
   accountNumber?: string;
+  bankVerified?: boolean;
 }
 
 /** GET /groups/:id — enriched detail payload. */
@@ -115,7 +159,10 @@ export interface Invite {
   status: "active" | "expired" | "accepted";
   /** Derived for UI: active → pending; may also flip to expired by date. */
   effectiveStatus?: InviteEffectiveStatus;
-  invitedBy?: Pick<User, "id" | "name">;
+  invitedBy?: Pick<
+    User,
+    "id" | "firstName" | "lastName" | "middleName" | "name"
+  >;
   inviterName?: string;
   createdAt?: string;
 }
@@ -129,7 +176,10 @@ export interface InvitePublic {
   expiresAt: string;
   status: Invite["status"];
   group?: Pick<Group, "id" | "name" | "contributionAmount" | "frequency">;
-  invitedBy?: Pick<User, "id" | "name">;
+  invitedBy?: Pick<
+    User,
+    "id" | "firstName" | "lastName" | "middleName" | "name"
+  >;
   groupName?: string;
   contributionAmount?: number;
   inviterName?: string;
@@ -254,7 +304,10 @@ export interface AdminGrowthStats {
 
 export interface AdminUserRow {
   id: string;
-  name: string;
+  firstName?: string;
+  lastName?: string;
+  middleName?: string | null;
+  name?: string;
   email: string;
   createdAt: string;
   lastLoginAt: string | null;

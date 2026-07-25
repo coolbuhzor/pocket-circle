@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useParams } from "next/navigation";
 import { Receipt } from "lucide-react";
 import { RequireAuth } from "@/components/require-auth";
@@ -25,6 +25,12 @@ import { ApiError } from "@/lib/api/client";
 
 type TabId = "overview" | "members" | "activity" | "history" | "settings";
 
+type SettingsFormState = {
+  name: string;
+  contributionAmount: number;
+  frequency: GroupFrequency;
+};
+
 function GroupDetailContent() {
   const params = useParams<{ groupId: string }>();
   const groupId = params.groupId;
@@ -46,20 +52,15 @@ function GroupDetailContent() {
 
   const [activeTab, setActiveTab] = useState<TabId>("overview");
   const [uploadOpen, setUploadOpen] = useState(false);
-  const [settingsForm, setSettingsForm] = useState({
-    name: "",
-    contributionAmount: 0,
-    frequency: "monthly" as GroupFrequency,
-  });
+  const [settingsDraft, setSettingsDraft] = useState<SettingsFormState | null>(
+    null,
+  );
 
-  useEffect(() => {
-    if (!group) return;
-    setSettingsForm({
-      name: group.name,
-      contributionAmount: group.contributionAmount,
-      frequency: group.frequency,
-    });
-  }, [group]);
+  const settingsForm: SettingsFormState = settingsDraft ?? {
+    name: group?.name ?? "",
+    contributionAmount: group?.contributionAmount ?? 0,
+    frequency: group?.frequency ?? "monthly",
+  };
 
   const derived = useGroupDetailDerived({
     group,
@@ -188,7 +189,7 @@ function GroupDetailContent() {
           <GroupSettingsTab
             groupId={group.id}
             form={settingsForm}
-            onChange={setSettingsForm}
+            onChange={setSettingsDraft}
             inviteLink={actions.inviteLink}
             saving={actions.savingSettings}
             generatingInvite={actions.generatingInvite}

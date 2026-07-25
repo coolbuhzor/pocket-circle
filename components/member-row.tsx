@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import {
   ChevronDown,
   ChevronUp,
@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { ContributionStatusBadge } from "@/components/contribution-status-badge";
 import type { ContributionDisplayStatus } from "@/lib/api/types";
+import { useClickOutside } from "@/hooks/use-click-outside";
 import { getInitials } from "@/lib/utils";
 import { cn } from "@/lib/utils";
 
@@ -48,15 +49,7 @@ export function MemberRow({
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    function handleClick(e: MouseEvent) {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
-        setMenuOpen(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClick);
-    return () => document.removeEventListener("mousedown", handleClick);
-  }, []);
+  useClickOutside(menuRef, () => setMenuOpen(false), menuOpen);
 
   return (
     <div
