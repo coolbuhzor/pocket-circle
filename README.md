@@ -1,36 +1,100 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Pocket Circle
 
-## Getting Started
+Frontend for digitising **Ajo** / rotating group savings in Nigeria.
 
-First, run the development server:
+Friends pool money monthly; one member (the collector) receives that month’s total; the role rotates. **Pocket Circle does not hold or move money** — it shows whose turn it is, that person’s bank details, and lets members upload proof of payment. Transfers stay bank-to-bank.
+
+## Stack
+
+- Next.js 16 (App Router) + TypeScript + React 19
+- Tailwind CSS v4
+- TanStack React Query
+- react-hook-form + zod
+- lucide-react
+- NestJS backend via a same-origin BFF (httpOnly JWT cookie)
+
+## Getting started
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+pnpm install
+cp .env.example .env.local   # set BACKEND_URL (server-only)
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+`BACKEND_URL` must **not** use a `NEXT_PUBLIC_` prefix — the browser never talks to the NestJS API directly.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Architecture
 
-## Learn More
+```
+Browser (UI + React Query)
+        │  same-origin fetch
+        ▼
+Next.js Route Handlers
+  /api/auth/*     → login/signup set httpOnly pc_token cookie; return { user } only
+  /api/proxy/*    → attach Authorization: Bearer from cookie → BACKEND_URL
+  /api/invites/*  → public invite lookup (no cookie)
+        │
+        ▼
+NestJS API (BACKEND_URL/api/v1/…)
+```
 
-To learn more about Next.js, take a look at the following resources:
+JWT never enters `localStorage`, `sessionStorage`, or client React state.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Domain model
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+| Entity | Role |
+| --- | --- |
+| **User** | Name, email, bank details |
+| **Group** | Contribution amount, members, payout order |
+| **Cycle** | Active month + collector |
+| **Contribution** | Receipt + stored `pending` / `confirmed` / `disputed` (UI uses derived `displayStatus`) |
+| **ActivityEvent** | Group timeline |
+| **Notification** | Per-user inbox |
+| **Invite** | Tokenised join links |
 
-## Deploy on Vercel
+## App routes
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+| Route | Purpose |
+| --- | --- |
+| `/` | Landing |
+| `/how-it-works` | Trust / product explanation |
+| `/architecture` | Architecture diagram |
+| `/login`, `/signup` | Auth |
+| `/dashboard` | Your groups |
+| `/groups/new` | Create group |
+| `/groups/[id]` | Overview, members, activity, history, settings |
+| `/invite/[token]` | Join via invite |
+| `/notifications` | Inbox |
+| `/settings` | Profile + bank details |
+| `/admin` | Super admin overview (`isSuperAdmin`) |
+| `/admin/users` | Platform users |
+| `/admin/groups` | All groups |
+| `/admin/insights` | Financial & engagement stats |
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Project structure
+
+```
+app/api/             # BFF: auth + catch-all proxy
+hooks/               # React Query hooks by domain
+lib/api/             # client helper + types + server BACKEND_URL
+components/          # UI + domain components
+proxy.ts             # Cookie presence gate for protected pages (Next.js 16)
+```
+
+## Scripts
+
+```bash
+pnpm dev      # development server
+pnpm build    # production build
+pnpm start    # run production build
+pnpm lint     # eslint
+```
+
+## Out of scope (by design)
+
+- Wallets, escrow, or payment rails
+- Moving money through the app
+- Legal enforcement between members
+- Password change / leave-group endpoints (not on the backend yet)

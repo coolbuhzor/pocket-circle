@@ -1,0 +1,80 @@
+"use client";
+
+import { useParams } from "next/navigation";
+import { UserRound } from "lucide-react";
+import { useAdminUser } from "@/hooks/useAdmin";
+import { EmptyState } from "@/components/EmptyState";
+import { Breadcrumb } from "@/components/Breadcrumb";
+import { AdminUserHeader } from "@/components/admin/AdminUserHeader";
+import {
+  adminUserContributionColumns,
+  adminUserGroupColumns,
+} from "@/components/admin/userDetailColumns";
+import { DataTable } from "@/components/ui/DataTable";
+import { Skeleton } from "@/components/ui/Skeleton";
+
+export default function AdminUserDetailPage() {
+  const params = useParams<{ id: string }>();
+  const { data: detail, isLoading, isError } = useAdminUser(params.id);
+
+  if (isLoading) {
+    return (
+      <div className="space-y-4">
+        <Skeleton className="h-24 w-full rounded-xl" />
+        <Skeleton className="h-48 w-full rounded-xl" />
+      </div>
+    );
+  }
+
+  if (isError || !detail) {
+    return (
+      <EmptyState
+        icon={<UserRound className="h-6 w-6" />}
+        title="User not found"
+        message="That account doesn't exist in the platform directory."
+        actionLabel="Back to users"
+        actionHref="/admin/users"
+      />
+    );
+  }
+
+  const { user, groups, contributions } = detail;
+
+  return (
+    <div className="space-y-6">
+      <Breadcrumb
+        items={[
+          { label: "Users", href: "/admin/users" },
+          { label: user.name },
+        ]}
+      />
+      <AdminUserHeader user={user} />
+
+      <section>
+        <h3 className="mb-2 text-sm font-semibold text-text">Groups</h3>
+        <DataTable
+          columns={adminUserGroupColumns}
+          data={groups}
+          getRowId={(row) => row.id}
+          emptyMessage="Not in any groups."
+          minWidth="480px"
+          skeletonRows={3}
+        />
+      </section>
+
+      <section>
+        <h3 className="mb-2 text-sm font-semibold text-text">
+          Contribution history
+        </h3>
+        <DataTable
+          columns={adminUserContributionColumns}
+          data={contributions}
+          getRowId={(row) => row.id}
+          emptyMessage="No contributions yet."
+          minWidth="640px"
+          skeletonRows={5}
+        />
+      </section>
+    </div>
+  );
+}
