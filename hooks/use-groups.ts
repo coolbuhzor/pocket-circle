@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { apiFetch } from "@/lib/api/client";
 import type {
+  CreateGroupResponse,
   Group,
   GroupDetail,
   GroupFrequency,
@@ -35,7 +36,7 @@ export function useCreateGroup() {
       frequency: GroupFrequency;
       memberEmails?: string[];
     }) =>
-      apiFetch<Group>("groups", {
+      apiFetch<CreateGroupResponse>("groups", {
         method: "POST",
         body: JSON.stringify(body),
       }),

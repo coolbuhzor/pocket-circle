@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useDebouncedValue } from "@/hooks/use-debounced-value";
 
 interface UseAdminListSearchOptions {
   basePath: string;
@@ -14,16 +15,15 @@ export function useAdminListSearch({ basePath }: UseAdminListSearchOptions) {
   const searchFromUrl = searchParams.get("search") ?? "";
 
   const [search, setSearch] = useState(searchFromUrl);
-  const [debounced, setDebounced] = useState(searchFromUrl);
+  const [prevSearchFromUrl, setPrevSearchFromUrl] = useState(searchFromUrl);
 
-  useEffect(() => {
+  // Keep the input in sync when the URL changes (back/forward).
+  if (searchFromUrl !== prevSearchFromUrl) {
+    setPrevSearchFromUrl(searchFromUrl);
     setSearch(searchFromUrl);
-  }, [searchFromUrl]);
+  }
 
-  useEffect(() => {
-    const t = setTimeout(() => setDebounced(search), 250);
-    return () => clearTimeout(t);
-  }, [search]);
+  const debounced = useDebouncedValue(search, 250);
 
   useEffect(() => {
     if (debounced === searchFromUrl) return;

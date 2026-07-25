@@ -6,15 +6,24 @@ import type {
   GroupListItem,
   GroupMemberWithUser,
 } from "@/lib/api/types";
+import { getFullName } from "@/lib/user-name";
 
 type CycleWithContributions = Cycle & { contributions?: Contribution[] };
 
 export function memberDisplayName(
-  member: Pick<GroupMemberWithUser, "name" | "user"> | { name?: string } | null | undefined,
+  member:
+    | Pick<GroupMemberWithUser, "name" | "user">
+    | Parameters<typeof getFullName>[0]
+    | null
+    | undefined,
 ): string {
   if (!member) return "Unknown";
-  if ("user" in member && member.user?.name) return member.user.name;
-  if ("name" in member && member.name) return member.name;
+  if ("user" in member && member.user) {
+    const fromNested = getFullName(member.user);
+    if (fromNested !== "Unknown") return fromNested;
+  }
+  const fromSelf = getFullName(member);
+  if (fromSelf !== "Unknown") return fromSelf;
   return "Unknown";
 }
 
@@ -77,8 +86,8 @@ export function toGroupCardProps(group: GroupListItem) {
     members[0]?.id ??
     "";
   const collectorName =
-    group.whoseTurn?.name ??
-    members.find((m) => m.id === collectorId)?.name ??
+    (group.whoseTurn ? getFullName(group.whoseTurn) : null) ||
+    members.find((m) => m.id === collectorId)?.name ||
     "—";
   const nextPayoutDate =
     group.nextPayoutDate ?? group.activeCycle?.periodEnd ?? "";

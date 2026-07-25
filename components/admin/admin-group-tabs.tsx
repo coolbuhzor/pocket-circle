@@ -105,6 +105,7 @@ interface AdminGroupOverviewTabProps {
     name?: string;
     bankName?: string | null;
     accountNumber?: string | null;
+    bankVerified?: boolean | null;
   } | null;
   paymentRows: AdminPaymentRow[];
 }
@@ -137,6 +138,7 @@ export function AdminGroupOverviewTab({
         collectorName={collector?.name ?? "Unknown"}
         bankName={collector?.bankName}
         accountNumber={collector?.accountNumber}
+        bankVerified={collector?.bankVerified}
       />
       <DataTable
         columns={paymentColumns}

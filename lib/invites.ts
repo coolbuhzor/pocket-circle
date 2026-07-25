@@ -1,4 +1,5 @@
 import type { Invite, InviteEffectiveStatus } from "@/lib/api/types";
+import { getFullName } from "@/lib/user-name";
 
 /** Prefer API `effectiveStatus`; fall back from raw status / expiry. */
 export function resolveInviteEffectiveStatus(
@@ -17,5 +18,20 @@ export function inviteDisplayEmail(invite: Invite): string {
 }
 
 export function inviteSenderName(invite: Invite): string {
-  return invite.invitedBy?.name ?? invite.inviterName ?? "Unknown";
+  if (invite.invitedBy) {
+    const fromParts = getFullName(invite.invitedBy);
+    if (fromParts !== "Unknown") return fromParts;
+  }
+  return invite.inviterName ?? "Unknown";
+}
+
+/**
+ * Shared copy for what happens after inviting someone by email — an existing
+ * user gets notified in-app, otherwise they only have the link. Reused by both
+ * the single-invite flow (group settings) and the multi-invite create-group flow.
+ */
+export function inviteResultMessage(matchedExistingUser: boolean): string {
+  return matchedExistingUser
+    ? "They'll see this invite in their notifications."
+    : "They don't have an account yet — send them this link so they can sign up and join.";
 }

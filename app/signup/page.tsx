@@ -1,22 +1,26 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
-import { Suspense, useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { redirect, useRouter, useSearchParams } from "next/navigation";
+import { Suspense } from "react";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AuthShell } from "@/components/auth-shell";
+import { BankDetailsFields } from "@/components/bank-details-fields";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/lib/auth";
 import { useToast } from "@/components/toast";
 
 const schema = z.object({
-  name: z.string().min(2, "Enter your full name"),
+  firstName: z.string().min(1, "Enter your first name"),
+  lastName: z.string().min(1, "Enter your last name"),
+  middleName: z.string().optional(),
   email: z.string().email("Enter a valid email"),
   password: z.string().min(8, "Use at least 8 characters"),
-  bankName: z.string().min(2, "Enter your bank name"),
+  bankCode: z.string().min(1, "Select your bank"),
+  bankName: z.string().min(1, "Select your bank"),
   accountNumber: z
     .string()
     .regex(/^\d{10}$/, "Account number should be 10 digits"),
@@ -34,18 +38,42 @@ function SignupForm() {
   const {
     register,
     handleSubmit,
+    control,
+    setValue,
     formState: { errors, isSubmitting },
     setError,
   } = useForm<FormValues>({
     resolver: zodResolver(schema),
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+      middleName: "",
+      email: "",
+      password: "",
+      bankCode: "",
+      bankName: "",
+      accountNumber: "",
+    },
   });
 
-  useEffect(() => {
-    if (!loading && user) router.replace(next);
-  }, [user, loading, router, next]);
+  const bankCode = useWatch({ control, name: "bankCode" }) ?? "";
+  const accountNumber = useWatch({ control, name: "accountNumber" }) ?? "";
+
+  if (!loading && user) {
+    redirect(next);
+  }
 
   async function onSubmit(values: FormValues) {
-    const result = await signup(values);
+    const result = await signup({
+      firstName: values.firstName.trim(),
+      lastName: values.lastName.trim(),
+      middleName: values.middleName?.trim() || undefined,
+      email: values.email.trim(),
+      password: values.password,
+      bankCode: values.bankCode,
+      bankName: values.bankName,
+      accountNumber: values.accountNumber,
+    });
     if (result.error) {
       setError("root", { message: result.error });
       return;
@@ -63,11 +91,25 @@ function SignupForm() {
       </p>
 
       <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-4">
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Input
+            label="First name"
+            autoComplete="given-name"
+            {...register("firstName")}
+            error={errors.firstName?.message}
+          />
+          <Input
+            label="Last name"
+            autoComplete="family-name"
+            {...register("lastName")}
+            error={errors.lastName?.message}
+          />
+        </div>
         <Input
-          label="Full name"
-          autoComplete="name"
-          {...register("name")}
-          error={errors.name?.message}
+          label="Middle name (optional)"
+          autoComplete="additional-name"
+          {...register("middleName")}
+          error={errors.middleName?.message}
         />
         <Input
           label="Email"
@@ -83,18 +125,35 @@ function SignupForm() {
           {...register("password")}
           error={errors.password?.message}
         />
-        <Input
-          label="Bank name"
-          placeholder="e.g. GTBank"
-          {...register("bankName")}
-          error={errors.bankName?.message}
-        />
-        <Input
-          label="Account number"
-          inputMode="numeric"
-          className="font-mono"
-          {...register("accountNumber")}
-          error={errors.accountNumber?.message}
+
+        <Controller
+          name="bankCode"
+          control={control}
+          render={() => (
+            <BankDetailsFields
+              bankCode={bankCode}
+              accountNumber={accountNumber}
+              onBankChange={(bank) => {
+                setValue("bankCode", bank?.code ?? "", {
+                  shouldValidate: true,
+                  shouldDirty: true,
+                });
+                setValue("bankName", bank?.name ?? "", {
+                  shouldValidate: true,
+                  shouldDirty: true,
+                });
+              }}
+              onAccountNumberChange={(value) =>
+                setValue("accountNumber", value, {
+                  shouldValidate: true,
+                  shouldDirty: true,
+                })
+              }
+              bankError={errors.bankCode?.message ?? errors.bankName?.message}
+              accountError={errors.accountNumber?.message}
+              authenticated={false}
+            />
+          )}
         />
 
         {errors.root && (

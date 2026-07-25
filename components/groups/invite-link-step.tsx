@@ -3,15 +3,19 @@
 import { Link as LinkIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CopyableField } from "@/components/copyable-field";
+import { InviteSentList } from "@/components/groups/invite-sent-list";
+import type { InviteSentResult } from "@/lib/api/types";
 
 interface InviteLinkStepProps {
   inviteLink: string;
+  invitesSent?: InviteSentResult[];
   finishing?: boolean;
   onFinish: () => void;
 }
 
 export function InviteLinkStep({
   inviteLink,
+  invitesSent = [],
   finishing,
   onFinish,
 }: InviteLinkStepProps) {
@@ -31,6 +35,7 @@ export function InviteLinkStep({
       {inviteLink && (
         <CopyableField label="Invite link" value={inviteLink} mono={false} />
       )}
+      <InviteSentList invites={invitesSent} />
       <Button fullWidth onClick={onFinish} disabled={finishing}>
         {finishing ? "Opening group…" : "Go to group"}
       </Button>

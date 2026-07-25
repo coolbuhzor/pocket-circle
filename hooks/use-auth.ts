@@ -35,10 +35,13 @@ export function useSignup() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (body: {
-      name: string;
+      firstName: string;
+      lastName: string;
+      middleName?: string;
       email: string;
       password: string;
       bankName: string;
+      bankCode: string;
       accountNumber: string;
     }) => authFetch<{ user: User }>("signup", body),
     onSuccess: (data) => {

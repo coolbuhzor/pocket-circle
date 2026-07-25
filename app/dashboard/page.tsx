@@ -10,6 +10,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/lib/auth";
 import { useGroups } from "@/hooks/use-groups";
 import { toGroupCardProps } from "@/lib/groups";
+import { getFirstName } from "@/lib/user-name";
 
 function DashboardContent() {
   const { user } = useAuth();
@@ -23,7 +24,7 @@ function DashboardContent() {
             Your groups
           </h1>
           <p className="mt-1 text-sm text-text-muted">
-            Hi {user?.name.split(" ")[0]} — here&apos;s where you&apos;re saving.
+            Hi {getFirstName(user)} — here&apos;s where you&apos;re saving.
           </p>
         </div>
         <Link href="/groups/new">

@@ -86,7 +86,7 @@ export function CreateGroupDetailsStep({
         label="Invite by email (optional)"
         emails={inviteEmails}
         onChange={onInviteEmailsChange}
-        hint="They must already have an account. Press Enter or click Add."
+        hint="Press Enter or comma to add each person. They don't need an account yet."
       />
       <Button type="submit" fullWidth disabled={submitting}>
         {submitting ? "Creating…" : "Continue"}

@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
-import { Suspense, useEffect } from "react";
+import { redirect, useRouter, useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -35,9 +35,9 @@ function LoginForm() {
     resolver: zodResolver(schema),
   });
 
-  useEffect(() => {
-    if (!loading && user) router.replace(next);
-  }, [user, loading, router, next]);
+  if (!loading && user) {
+    redirect(next);
+  }
 
   async function onSubmit(values: FormValues) {
     const result = await login(values.email, values.password);

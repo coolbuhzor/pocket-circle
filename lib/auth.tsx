@@ -15,10 +15,13 @@ interface AuthContextValue {
   loading: boolean;
   login: (email: string, password: string) => Promise<{ error?: string }>;
   signup: (data: {
-    name: string;
+    firstName: string;
+    lastName: string;
+    middleName?: string;
     email: string;
     password: string;
     bankName: string;
+    bankCode: string;
     accountNumber: string;
   }) => Promise<{ error?: string }>;
   logout: () => void;

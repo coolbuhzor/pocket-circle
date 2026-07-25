@@ -12,6 +12,7 @@ import { useCloseCycle } from "@/hooks/use-cycles";
 import { useCreateInvite } from "@/hooks/use-invites";
 import { useToast } from "@/components/toast";
 import type { GroupFrequency } from "@/lib/api/types";
+import { inviteResultMessage } from "@/lib/invites";
 import { formatNaira } from "@/lib/utils";
 
 interface UseGroupDetailActionsOptions {
@@ -91,11 +92,9 @@ export function useGroupDetailActions({
       await navigator.clipboard.writeText(url);
 
       if (invite.matchedExistingUser) {
-        toast("They'll see this invite in their notifications.");
+        toast(inviteResultMessage(true));
       } else if (email) {
-        toast(
-          "They don't have an account yet — send them this link so they can sign up and join.",
-        );
+        toast(inviteResultMessage(false));
       } else {
         toast("Invite link created — share it however you like.");
       }

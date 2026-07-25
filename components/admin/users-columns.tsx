@@ -1,13 +1,17 @@
 import type { ColumnDef } from "@tanstack/react-table";
 import type { AdminUserRow } from "@/lib/api/types";
 import { formatDate, formatNaira } from "@/lib/utils";
+import { getFullName } from "@/lib/user-name";
 
 export const adminUsersColumns: ColumnDef<AdminUserRow, unknown>[] = [
   {
-    accessorKey: "name",
+    id: "name",
+    accessorFn: (row) => getFullName(row),
     header: "Name",
     cell: ({ row }) => (
-      <span className="font-medium text-text">{row.original.name}</span>
+      <span className="font-medium text-text">
+        {getFullName(row.original)}
+      </span>
     ),
   },
   {

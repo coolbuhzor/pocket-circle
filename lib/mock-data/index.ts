@@ -40,7 +40,12 @@ function pushNotification(
 }
 
 function userName(id: string) {
-  return store.users.find((u) => u.id === id)?.name ?? "Someone";
+  const u = store.users.find((user) => user.id === id);
+  if (!u) return "Someone";
+  const parts = [u.firstName, u.middleName, u.lastName]
+    .map((p) => p?.trim())
+    .filter(Boolean);
+  return parts.length ? parts.join(" ") : (u.name ?? "Someone");
 }
 
 function groupName(id: string) {
@@ -67,10 +72,14 @@ export async function createUser(
   await delay();
   const user: User = {
     id: `u${Date.now()}`,
-    name: data.name,
+    firstName: data.firstName,
+    lastName: data.lastName,
+    middleName: data.middleName ?? null,
     email: data.email,
     bankName: data.bankName,
+    bankCode: data.bankCode,
     accountNumber: data.accountNumber,
+    bankVerified: data.bankVerified ?? false,
     password: data.password,
     notifyEmail: true,
     notifyWhatsApp: true,
@@ -373,7 +382,7 @@ export async function sendReminder(data: {
   });
 
   const text = encodeURIComponent(
-    `Hi ${toUser?.name ?? "there"}, friendly reminder to send your ₦${amount.toLocaleString()} contribution for ${group?.name ?? "our circle"} this month. Thanks! — via Pocket Circle`,
+    `Hi ${toUser ? userName(toUser.id) : "there"}, friendly reminder to send your ₦${amount.toLocaleString()} contribution for ${group?.name ?? "our circle"} this month. Thanks! — via Pocket Circle`,
   );
   return { whatsappUrl: `https://wa.me/?text=${text}` };
 }
@@ -554,7 +563,7 @@ export async function getCycleSummary(cycleId: string): Promise<{
       else if (new Date() > new Date(cycle.periodEnd)) status = "overdue";
       return {
         userId: m.userId,
-        name: user?.name ?? "Unknown",
+        name: user ? userName(user.id) : "Unknown",
         status,
         amount: contrib?.amount,
         submittedAt: contrib?.submittedAt,

@@ -1,9 +1,15 @@
 export interface User {
   id: string;
-  name: string;
+  firstName: string;
+  lastName: string;
+  middleName?: string | null;
+  /** Legacy computed full name — prefer getFullName(). */
+  name?: string;
   email: string;
   bankName: string;
+  bankCode?: string | null;
   accountNumber: string;
+  bankVerified?: boolean;
   password?: string;
   notifyEmail?: boolean;
   notifyWhatsApp?: boolean;
@@ -67,7 +73,10 @@ export interface AdminGrowthStats {
 /** GET /admin/users row */
 export interface AdminUserRow {
   id: string;
-  name: string;
+  firstName?: string;
+  lastName?: string;
+  middleName?: string | null;
+  name?: string;
   email: string;
   createdAt: string;
   lastLoginAt: string | null;
