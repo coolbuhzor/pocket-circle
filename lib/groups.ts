@@ -117,3 +117,30 @@ export type CycleHistoryRow = {
   status?: string;
   paidLabel?: string;
 };
+
+/** Shown when Delete is disabled under the deletion rule. */
+export const DELETE_GROUP_BLOCKED_TOOLTIP =
+  "You can delete a group only if no contributions have been recorded yet, or after a full rotation has completed.";
+
+/**
+ * Deletion rule: allowed when there are zero contributions ever recorded, or
+ * a full rotation has completed. Prefer backend `canDelete` when present.
+ */
+export function resolveCanDeleteGroup(options: {
+  canDelete?: boolean;
+  memberCount: number;
+  completedCycleCount: number;
+  /** Contributions known for the active cycle (fallback when `canDelete` is absent). */
+  activeContributionCount?: number;
+}): boolean {
+  if (typeof options.canDelete === "boolean") return options.canDelete;
+
+  const memberCount = options.memberCount;
+  const completedCycleCount = options.completedCycleCount;
+  const fullRotationCompleted =
+    memberCount > 0 && completedCycleCount >= memberCount;
+  const zeroContributionsEver =
+    (options.activeContributionCount ?? 0) === 0 && completedCycleCount === 0;
+
+  return zeroContributionsEver || fullRotationCompleted;
+}

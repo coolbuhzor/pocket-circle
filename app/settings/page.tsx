@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
+import Link from "next/link";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -469,6 +470,24 @@ function SettingsForm({ user }: { user: User }) {
           <PreferencesPanel key={user.id} user={user} />
         )}
       </div>
+
+      <p className="mt-10 text-xs text-text-muted">
+        <Link
+          href="/terms"
+          className="underline-offset-2 hover:text-primary hover:underline"
+        >
+          Terms of Service
+        </Link>
+        <span className="mx-1.5 text-primary-light" aria-hidden>
+          ·
+        </span>
+        <Link
+          href="/privacy"
+          className="underline-offset-2 hover:text-primary hover:underline"
+        >
+          Privacy Policy
+        </Link>
+      </p>
     </div>
   );
 }

@@ -7,15 +7,15 @@ import { cn } from "@/lib/utils";
 const faqs = [
   {
     q: "Do you hold our money?",
-    a: "No — and we have no plans to. There is no wallet to fund and no balance to withdraw. You send the contribution from your own bank app to the collector’s account, exactly the way your group does it today. Pocket Circle only records that it happened.",
+    a: "No, and we have no plans to. There is no wallet to fund and no balance to withdraw. You send the contribution from your own bank app to the collector’s account, exactly the way your group does it today. Pocket Circle only records that it happened.",
   },
   {
     q: "What happens when somebody doesn’t pay?",
-    a: "It stops being invisible. Their status turns overdue, the collector can fire off a reminder that opens in WhatsApp, and the cycle history keeps the receipt trail. Actually enforcing it is still between you and your people — we can’t debit anyone or decide who is right in a dispute.",
+    a: "It stops being invisible. Their status turns overdue, the collector can fire off a reminder that opens in WhatsApp, and the cycle history keeps the receipt trail. Actually enforcing it is still between you and your people. We can’t debit anyone or decide who is right in a dispute.",
   },
   {
     q: "Does everyone need to download an app?",
-    a: "Everyone in the circle needs an account to see the group and upload receipts, but it runs in the browser — there is nothing to install from a store, and it works on the phone people already carry.",
+    a: "Everyone in the circle needs an account to see the group and upload receipts, but it runs in the browser. There is nothing to install from a store, and it works on the phone people already carry.",
   },
   {
     q: "Can we change the amount or the rotation order later?",
@@ -31,7 +31,7 @@ const faqs = [
   },
   {
     q: "Is this a loan or investment app?",
-    a: "No. No credit checks, no interest, no lending, no returns. It is the same rotating savings your family and colleagues already run — just written down where everybody can see it.",
+    a: "No. No credit checks, no interest, no lending, no returns. It is the same rotating savings your family and colleagues already run, just written down where everybody can see it.",
   },
 ];
 

@@ -93,6 +93,24 @@ function LoginForm() {
           Sign up
         </Link>
       </p>
+
+      <p className="mt-4 text-center text-xs text-text-muted">
+        <Link
+          href="/terms"
+          className="underline-offset-2 hover:text-primary hover:underline"
+        >
+          Terms
+        </Link>
+        <span className="mx-1.5 text-primary-light" aria-hidden>
+          ·
+        </span>
+        <Link
+          href="/privacy"
+          className="underline-offset-2 hover:text-primary hover:underline"
+        >
+          Privacy
+        </Link>
+      </p>
     </AuthShell>
   );
 }

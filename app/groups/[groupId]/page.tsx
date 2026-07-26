@@ -194,6 +194,7 @@ function GroupDetailContent() {
             saving={actions.savingSettings}
             generatingInvite={actions.generatingInvite}
             deleting={actions.deletingGroup}
+            canDelete={derived.canDeleteGroup}
             onSave={() => actions.handleSaveSettings(settingsForm)}
             onGenerateInvite={actions.handleGenerateInvite}
             onDelete={actions.handleDeleteGroup}

@@ -83,10 +83,10 @@ export function useDeleteGroup(id: string) {
 export function useReorderMembers(groupId: string) {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (orderedUserIds: string[]) =>
+    mutationFn: (userIds: string[]) =>
       apiFetch(`groups/${groupId}/members/reorder`, {
         method: "POST",
-        body: JSON.stringify({ orderedUserIds }),
+        body: JSON.stringify({ userIds }),
       }),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ["group", groupId] });

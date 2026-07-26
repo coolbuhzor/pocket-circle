@@ -9,6 +9,7 @@ import {
   Users,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { LandingFooter } from "@/components/marketing/landing-footer";
 
 const principles = [
   {
@@ -142,6 +143,8 @@ export default function HowItWorksPage() {
           Receipts are proof for the group — not a payment rail.
         </p>
       </section>
+
+      <LandingFooter />
     </div>
   );
 }

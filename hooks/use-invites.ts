@@ -55,6 +55,32 @@ export function useAcceptInvite(token: string) {
   });
 }
 
+export function useRevokeInvite(groupId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (token: string) =>
+      apiFetch(`groups/${groupId}/invites/${token}/revoke`, {
+        method: "POST",
+      }),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ["invites", groupId] });
+    },
+  });
+}
+
+export function useResendInvite(groupId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (token: string) =>
+      apiFetch(`groups/${groupId}/invites/${token}/resend`, {
+        method: "POST",
+      }),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ["invites", groupId] });
+    },
+  });
+}
+
 export function useActivity(groupId: string | undefined) {
   return useQuery({
     queryKey: ["activity", groupId],

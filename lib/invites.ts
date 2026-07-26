@@ -7,6 +7,7 @@ export function resolveInviteEffectiveStatus(
 ): InviteEffectiveStatus {
   if (invite.effectiveStatus) return invite.effectiveStatus;
   if (invite.status === "accepted") return "accepted";
+  if (invite.status === "revoked") return "revoked";
   if (invite.status === "expired") return "expired";
   if (new Date(invite.expiresAt).getTime() < Date.now()) return "expired";
   return "pending";

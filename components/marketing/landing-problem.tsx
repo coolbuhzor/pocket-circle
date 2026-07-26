@@ -29,7 +29,7 @@ export function LandingProblem() {
         </h2>
         <p className="mt-4 max-w-2xl text-base leading-relaxed text-text-muted">
           Most circles run on a group chat, one person’s memory, and a lot of
-          scrolling. Nobody is being dishonest — the information is just spread
+          scrolling. Nobody is being dishonest. The information is just spread
           across two hundred messages.
         </p>
       </Reveal>

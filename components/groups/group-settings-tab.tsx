@@ -11,7 +11,7 @@ import { AmountInput } from "@/components/ui/amount-input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useGroupInvites } from "@/hooks/use-invites";
 import type { GroupFrequency } from "@/lib/api/types";
-import { FREQUENCY_OPTIONS } from "@/lib/groups";
+import { DELETE_GROUP_BLOCKED_TOOLTIP, FREQUENCY_OPTIONS } from "@/lib/groups";
 
 export type GroupSettingsForm = {
   name: string;
@@ -27,6 +27,7 @@ interface GroupSettingsTabProps {
   saving?: boolean;
   generatingInvite?: boolean;
   deleting?: boolean;
+  canDelete?: boolean;
   onSave: () => void;
   onGenerateInvite: (email?: string) => void;
   onDelete: () => void;
@@ -40,6 +41,7 @@ export function GroupSettingsTab({
   saving,
   generatingInvite,
   deleting,
+  canDelete = true,
   onSave,
   onGenerateInvite,
   onDelete,
@@ -128,7 +130,11 @@ export function GroupSettingsTab({
                 <Skeleton className="h-14 w-full rounded-xl" />
               </div>
             ) : (
-              <InviteList invites={invites} />
+              <InviteList
+                groupId={groupId}
+                invites={invites}
+                allowRevoke
+              />
             )}
           </div>
         </div>
@@ -141,15 +147,24 @@ export function GroupSettingsTab({
         <p className="mt-1 text-sm text-text-muted">
           Deleting a group removes it for everyone. This can&apos;t be undone.
         </p>
-        <Button
-          variant="danger"
-          className="mt-4"
-          onClick={onDelete}
-          disabled={deleting}
+        <span
+          className="mt-4 inline-flex"
+          title={canDelete ? undefined : DELETE_GROUP_BLOCKED_TOOLTIP}
         >
-          <Trash2 className="h-4 w-4" />
-          Delete group
-        </Button>
+          <Button
+            variant="danger"
+            onClick={onDelete}
+            disabled={deleting || !canDelete}
+          >
+            <Trash2 className="h-4 w-4" />
+            Delete group
+          </Button>
+        </span>
+        {!canDelete && (
+          <p className="mt-2 text-xs text-text-muted">
+            {DELETE_GROUP_BLOCKED_TOOLTIP}
+          </p>
+        )}
       </div>
     </div>
   );
