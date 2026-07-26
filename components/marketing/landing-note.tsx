@@ -15,7 +15,7 @@ export function LandingNote() {
           <div className="mt-5 space-y-4 text-base leading-relaxed text-text-muted">
             <p>
               One of us grew up around a circle that ran for years on a
-              WhatsApp group and a notebook. It worked — until the month the
+              WhatsApp group and a notebook. It worked, until the month the
               person holding the notebook travelled, and two people were
               certain they had already paid.
             </p>
@@ -23,7 +23,7 @@ export function LandingNote() {
               Fintech’s answer is usually “put your money in our wallet.” That
               was never the problem. Nigerians have been running Ajo long before
               anybody had an app, and the trust is already there. What is
-              missing is a shared, boring, dependable record — one everybody can
+              missing is a shared, boring, dependable record, one everybody can
               open at 11pm and agree on.
             </p>
             <p>

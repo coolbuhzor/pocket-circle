@@ -60,7 +60,7 @@ export function LandingHero() {
 
           <Reveal delay={140}>
             <p className="mt-6 max-w-xl text-base leading-relaxed text-text-muted sm:text-lg">
-              Six friends, ₦50,000 each, one person collects — then it rotates.
+              Six friends, ₦50,000 each, one person collects, then it rotates.
               Pocket Circle keeps that agreement in one place: whose turn it is,
               who has sent their money, and the receipt to prove it. The cash
               still goes straight from your bank to theirs.
@@ -71,7 +71,7 @@ export function LandingHero() {
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Link href="/signup">
                 <Button size="lg" className="group w-full sm:w-auto">
-                  Start a circle — free
+                  Start a circle free
                   <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                 </Button>
               </Link>
@@ -110,7 +110,7 @@ export function LandingHero() {
               >
                 Log in and open it
               </Link>{" "}
-              — you’ll be in the rotation in under a minute.
+              and you’ll be in the rotation in under a minute.
             </p>
           </Reveal>
         </div>

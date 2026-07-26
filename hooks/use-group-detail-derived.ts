@@ -11,6 +11,7 @@ import type {
 import {
   memberDisplayName,
   memberStatus,
+  resolveCanDeleteGroup,
   type CycleHistoryRow,
 } from "@/lib/groups";
 import { getFullName } from "@/lib/user-name";
@@ -133,6 +134,18 @@ export function useGroupDetailDerived({
       "pending",
     );
 
+  const canDeleteGroup = useMemo(
+    () =>
+      resolveCanDeleteGroup({
+        canDelete: group?.canDelete,
+        memberCount: group?.members.length ?? 0,
+        completedCycleCount: cycles.filter((c) => c.status === "completed")
+          .length,
+        activeContributionCount: contributions.length,
+      }),
+    [group?.canDelete, group?.members.length, cycles, contributions.length],
+  );
+
   return {
     isAdmin,
     orderedMembers,
@@ -143,5 +156,6 @@ export function useGroupDetailDerived({
     myContribution,
     paymentRows,
     myDisplayStatus,
+    canDeleteGroup,
   };
 }

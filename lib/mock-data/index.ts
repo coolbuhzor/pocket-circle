@@ -638,6 +638,9 @@ export async function getInvite(token: string): Promise<Invite | null> {
   await delay();
   const invite = store.invites.find((i) => i.token === token);
   if (!invite) return null;
+  if (invite.status === "revoked") {
+    return clone({ ...invite, status: "revoked" });
+  }
   if (
     invite.status === "expired" ||
     new Date(invite.expiresAt) < new Date()

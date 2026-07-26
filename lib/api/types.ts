@@ -110,6 +110,11 @@ export interface GroupDetail extends Group {
   activeCycle: Cycle | null;
   whoseTurn: WhoseTurn | null;
   myContributionStatus: ContributionDisplayStatus;
+  /**
+   * Whether DELETE is allowed under the deletion rule (zero contributions ever,
+   * or a full rotation completed). Prefer this when the backend provides it.
+   */
+  canDelete?: boolean;
 }
 
 export interface Cycle {
@@ -148,7 +153,11 @@ export interface Contribution {
   displayStatus?: ContributionDisplayStatus;
 }
 
-export type InviteEffectiveStatus = "pending" | "accepted" | "expired";
+export type InviteEffectiveStatus =
+  | "pending"
+  | "accepted"
+  | "expired"
+  | "revoked";
 
 export interface Invite {
   token: string;
@@ -156,7 +165,7 @@ export interface Invite {
   invitedByUserId: string;
   inviteeEmail?: string | null;
   expiresAt: string;
-  status: "active" | "expired" | "accepted";
+  status: "active" | "expired" | "accepted" | "revoked";
   /** Derived for UI: active → pending; may also flip to expired by date. */
   effectiveStatus?: InviteEffectiveStatus;
   invitedBy?: Pick<
@@ -175,6 +184,8 @@ export interface InvitePublic {
   inviteeEmail?: string;
   expiresAt: string;
   status: Invite["status"];
+  /** Derived for UI; may flip active → expired by date. */
+  effectiveStatus?: InviteEffectiveStatus;
   group?: Pick<Group, "id" | "name" | "contributionAmount" | "frequency">;
   invitedBy?: Pick<
     User,

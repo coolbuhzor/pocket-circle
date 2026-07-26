@@ -15,7 +15,7 @@ const steps: { icon: LucideIcon; title: string; body: string }[] = [
   {
     icon: Users,
     title: "Agree the terms once",
-    body: "Name the circle, set the contribution and how often it runs — weekly, biweekly or monthly. Whoever creates it is the first admin.",
+    body: "Name the circle, set the contribution and how often it runs: weekly, biweekly or monthly. Whoever creates it is the first admin.",
   },
   {
     icon: Link2,
@@ -30,7 +30,7 @@ const steps: { icon: LucideIcon; title: string; body: string }[] = [
   {
     icon: ShieldCheck,
     title: "The collector confirms or flags",
-    body: "One tap to confirm. If something looks off, they flag it with a reason and the payer can re-upload — no arguments in the chat.",
+    body: "One tap to confirm. If something looks off, they flag it with a reason and the payer can re-upload. No arguments in the chat.",
   },
   {
     icon: BellRing,
@@ -72,7 +72,7 @@ export function LandingHowItWorks() {
                 </p>
                 <p className="mt-2 text-sm leading-relaxed text-text">
                   Pocket Circle never touches the money. There is no wallet, no
-                  escrow account and no balance to withdraw — only the record of
+                  escrow account and no balance to withdraw. Only the record of
                   what your group agreed and what actually happened.
                 </p>
               </div>

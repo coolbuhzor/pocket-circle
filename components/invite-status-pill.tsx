@@ -5,12 +5,14 @@ const labels: Record<InviteEffectiveStatus, string> = {
   pending: "Pending",
   accepted: "Accepted",
   expired: "Expired",
+  revoked: "Revoked",
 };
 
 const styles: Record<InviteEffectiveStatus, string> = {
   pending: "bg-pending/20 text-pending",
   accepted: "bg-success/15 text-success",
   expired: "bg-primary-light/30 text-text-muted",
+  revoked: "bg-danger/15 text-danger",
 };
 
 export function InviteStatusPill({

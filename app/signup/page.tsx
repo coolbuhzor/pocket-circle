@@ -234,9 +234,28 @@ function SignupForm() {
             Continue
           </Button>
         ) : (
-          <Button type="submit" fullWidth disabled={isSubmitting}>
-            {isSubmitting ? "Creating account…" : "Create account"}
-          </Button>
+          <>
+            <p className="text-center text-xs leading-relaxed text-text-muted">
+              By creating an account, you agree to our{" "}
+              <Link
+                href="/terms"
+                className="font-medium text-primary underline-offset-2 hover:underline"
+              >
+                Terms of Service
+              </Link>{" "}
+              and{" "}
+              <Link
+                href="/privacy"
+                className="font-medium text-primary underline-offset-2 hover:underline"
+              >
+                Privacy Policy
+              </Link>
+              .
+            </p>
+            <Button type="submit" fullWidth disabled={isSubmitting}>
+              {isSubmitting ? "Creating account…" : "Create account"}
+            </Button>
+          </>
         )}
       </form>
 

@@ -11,6 +11,7 @@ import {
 import { useCloseCycle } from "@/hooks/use-cycles";
 import { useCreateInvite } from "@/hooks/use-invites";
 import { useToast } from "@/components/toast";
+import { ApiError } from "@/lib/api/client";
 import type { GroupFrequency } from "@/lib/api/types";
 import { inviteResultMessage } from "@/lib/invites";
 import { formatNaira } from "@/lib/utils";
@@ -133,10 +134,12 @@ export function useGroupDetailActions({
       await deleteGroup.mutateAsync();
       toast("Group deleted");
     } catch (err) {
-      toast(
-        err instanceof Error ? err.message : "Could not delete group",
-        "error",
-      );
+      // Prefer the backend message as-is (e.g. race: someone paid after page load).
+      const message =
+        err instanceof ApiError || err instanceof Error
+          ? err.message
+          : "Could not delete group";
+      toast(message, "error");
     }
   }
 

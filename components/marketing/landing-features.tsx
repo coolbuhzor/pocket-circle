@@ -49,7 +49,7 @@ const cards: {
   {
     icon: History,
     title: "Every cycle is kept",
-    body: "Who collected, what period it covered, how many people paid — a year later the record is still there.",
+    body: "Who collected, what period it covered, how many people paid. A year later the record is still there.",
   },
   {
     icon: Download,
@@ -87,7 +87,7 @@ export function LandingFeatures() {
                   You can see the whole rotation
                 </h3>
                 <p className="mt-3 text-sm leading-relaxed text-primary-light">
-                  Not a list buried in someone’s notes — a circle showing every
+                  Not a list buried in someone’s notes. A circle showing every
                   member, whose turn it is now, and who is next. Admins can
                   reorder it when life happens and somebody needs to swap.
                 </p>

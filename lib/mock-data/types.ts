@@ -177,7 +177,7 @@ export interface Invite {
   groupId: string;
   invitedByUserId: string;
   expiresAt: string;
-  status: "active" | "expired" | "accepted";
+  status: "active" | "expired" | "accepted" | "revoked";
 }
 
 export type ActivityType =
