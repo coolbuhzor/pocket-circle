@@ -111,6 +111,8 @@ pnpm test       # vitest
 pnpm test:e2e   # playwright (starts local API + Next on :3100)
 ```
 
+GitHub Actions runs lint, unit tests, typecheck, and `pnpm build` on every push and pull request to `main` / `dev`. Playwright e2e is not part of CI (it needs a local API and database).
+
 ## Email (Resend demo mode)
 
 Invite emails and password-reset emails are composed by the backend. **This app runs in Resend demo mode: no real email is delivered.** After a successful send, the UI shows the payload (to, subject, body) with copy buttons, plus a demo-mode banner. Resend test/sandbox keys can only send to the account owner’s verified address.
