@@ -1,12 +1,7 @@
 "use client";
 
-import {
-  flexRender,
-  getCoreRowModel,
-  useReactTable,
-  type ColumnDef,
-  type Row,
-} from "@tanstack/react-table";
+import type { ReactNode } from "react";
+import type { ColumnDef } from "@tanstack/react-table";
 import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Pagination } from "@/components/admin/pagination";
@@ -34,6 +29,50 @@ interface DataTableProps<TData> {
   density?: "comfortable" | "compact";
 }
 
+function columnId<TData>(
+  column: ColumnDef<TData, unknown>,
+  index: number,
+): string {
+  if (column.id) return column.id;
+  if ("accessorKey" in column && column.accessorKey != null) {
+    return String(column.accessorKey);
+  }
+  return `col-${index}`;
+}
+
+function headerLabel<TData>(column: ColumnDef<TData, unknown>): ReactNode {
+  if (typeof column.header === "string") return column.header;
+  return null;
+}
+
+function cellContent<TData>(
+  column: ColumnDef<TData, unknown>,
+  original: TData,
+  index: number,
+  id: string,
+): ReactNode {
+  if (typeof column.cell === "function") {
+    const render = column.cell as (ctx: {
+      row: { original: TData; index: number; id: string };
+    }) => ReactNode;
+    return render({ row: { original, index, id } });
+  }
+
+  if ("accessorFn" in column && typeof column.accessorFn === "function") {
+    const value = column.accessorFn(original, index);
+    return value == null ? null : String(value);
+  }
+
+  if ("accessorKey" in column && column.accessorKey != null) {
+    const value = (original as Record<string, unknown>)[
+      String(column.accessorKey)
+    ];
+    return value == null ? null : String(value);
+  }
+
+  return null;
+}
+
 export function DataTable<TData>({
   columns,
   data,
@@ -47,25 +86,10 @@ export function DataTable<TData>({
   className,
   density = "compact",
 }: DataTableProps<TData>) {
-  const table = useReactTable({
-    data,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-    getRowId: getRowId
-      ? (row, index) => getRowId(row, index)
-      : undefined,
-    manualPagination: Boolean(pagination),
-  });
-
   const columnCount = columns.length;
-  const cellPad =
-    density === "comfortable" ? "px-4 py-3" : "px-3 py-2";
+  const cellPad = density === "comfortable" ? "px-4 py-3" : "px-3 py-2";
   const headerPad =
     density === "comfortable" ? "px-4 py-3" : "px-3 py-2.5";
-
-  function handleRowClick(row: Row<TData>) {
-    onRowClick?.(row.original);
-  }
 
   return (
     <div
@@ -75,36 +99,26 @@ export function DataTable<TData>({
       )}
     >
       <div className="overflow-x-auto">
-        <table
-          className="w-full text-left text-sm"
-          style={{ minWidth }}
-        >
+        <table className="w-full text-left text-sm" style={{ minWidth }}>
           <thead className="border-b border-primary-light/40 bg-bg text-xs uppercase tracking-wide text-text-muted">
-            {table.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  const meta = header.column.columnDef.meta;
-                  return (
-                    <th
-                      key={header.id}
-                      className={cn(
-                        "font-medium",
-                        headerPad,
-                        meta?.align === "right" && "text-right",
-                        meta?.className,
-                      )}
-                    >
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext(),
-                          )}
-                    </th>
-                  );
-                })}
-              </tr>
-            ))}
+            <tr>
+              {columns.map((column, index) => {
+                const meta = column.meta;
+                return (
+                  <th
+                    key={columnId(column, index)}
+                    className={cn(
+                      "font-medium",
+                      headerPad,
+                      meta?.align === "right" && "text-right",
+                      meta?.className,
+                    )}
+                  >
+                    {headerLabel(column)}
+                  </th>
+                );
+              })}
+            </tr>
           </thead>
           <tbody className="pc-stagger">
             {isLoading ? (
@@ -114,7 +128,10 @@ export function DataTable<TData>({
                   className="border-b border-primary-light/20 last:border-0"
                 >
                   {Array.from({ length: columnCount }).map((_, colIndex) => (
-                    <td key={`skeleton-${rowIndex}-${colIndex}`} className={cellPad}>
+                    <td
+                      key={`skeleton-${rowIndex}-${colIndex}`}
+                      className={cellPad}
+                    >
                       <Skeleton
                         className={cn(
                           "h-4",
@@ -126,7 +143,7 @@ export function DataTable<TData>({
                   ))}
                 </tr>
               ))
-            ) : table.getRowModel().rows.length === 0 ? (
+            ) : data.length === 0 ? (
               <tr>
                 <td
                   colSpan={columnCount}
@@ -136,37 +153,37 @@ export function DataTable<TData>({
                 </td>
               </tr>
             ) : (
-              table.getRowModel().rows.map((row) => (
-                <tr
-                  key={row.id}
-                  className={cn(
-                    "border-b border-primary-light/20 transition-colors last:border-0",
-                    onRowClick && "cursor-pointer hover:bg-primary-light/10",
-                  )}
-                  onClick={
-                    onRowClick ? () => handleRowClick(row) : undefined
-                  }
-                >
-                  {row.getVisibleCells().map((cell) => {
-                    const meta = cell.column.columnDef.meta;
-                    return (
-                      <td
-                        key={cell.id}
-                        className={cn(
-                          cellPad,
-                          meta?.align === "right" && "text-right",
-                          meta?.className,
-                        )}
-                      >
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext(),
-                        )}
-                      </td>
-                    );
-                  })}
-                </tr>
-              ))
+              data.map((original, index) => {
+                const id = getRowId?.(original, index) ?? String(index);
+                return (
+                  <tr
+                    key={id}
+                    className={cn(
+                      "border-b border-primary-light/20 transition-colors last:border-0",
+                      onRowClick && "cursor-pointer hover:bg-primary-light/10",
+                    )}
+                    onClick={
+                      onRowClick ? () => onRowClick(original) : undefined
+                    }
+                  >
+                    {columns.map((column, colIndex) => {
+                      const meta = column.meta;
+                      return (
+                        <td
+                          key={`${id}-${columnId(column, colIndex)}`}
+                          className={cn(
+                            cellPad,
+                            meta?.align === "right" && "text-right",
+                            meta?.className,
+                          )}
+                        >
+                          {cellContent(column, original, index, id)}
+                        </td>
+                      );
+                    })}
+                  </tr>
+                );
+              })
             )}
           </tbody>
         </table>

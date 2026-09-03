@@ -5,6 +5,7 @@ import { Check, Flag, Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { TextArea } from "@/components/ui/text-area";
 import { ContributionStatusBadge } from "@/components/contribution-status-badge";
+import { ReceiptPreview } from "@/components/receipt-preview";
 import {
   useConfirmContribution,
   useDisputeContribution,
@@ -68,14 +69,16 @@ export function CyclePaymentsPanel({
       toast("Say why you're flagging this receipt", "error");
       return;
     }
+    const disputeReason = reason.trim();
+    // Close the form immediately — cache already flips to disputed on mutate.
+    setDisputeFor(null);
+    setReason("");
     setBusyId(contributionId);
     try {
       await disputeMut.mutateAsync({
         contributionId,
-        reason: reason.trim(),
+        reason: disputeReason,
       });
-      setDisputeFor(null);
-      setReason("");
       toast("Receipt flagged");
       onChanged();
     } catch (err) {
@@ -147,16 +150,6 @@ export function CyclePaymentsPanel({
                       ? `Uploaded ${formatDate(contrib.submittedAt)} · ${formatNaira(contrib.amount)}`
                       : `Expected ${formatNaira(contributionAmount)}`}
                   </p>
-                  {contrib?.receiptUrl && (
-                    <a
-                      href={contrib.receiptUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="mt-1 inline-block text-xs font-medium text-secondary hover:underline"
-                    >
-                      View receipt
-                    </a>
-                  )}
                   {contrib?.disputeReason && (
                     <p className="mt-1 text-xs text-danger">
                       {contrib.disputeReason}
@@ -166,6 +159,13 @@ export function CyclePaymentsPanel({
                     <p className="mt-1 text-xs text-text-muted">
                       Note: {contrib.note}
                     </p>
+                  )}
+
+                  {contrib?.receiptUrl && (
+                    <ReceiptPreview
+                      url={contrib.receiptUrl}
+                      payerName={row.name}
+                    />
                   )}
 
                   <div className="mt-3 flex flex-wrap gap-2">

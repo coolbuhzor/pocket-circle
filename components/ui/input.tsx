@@ -1,6 +1,6 @@
 "use client";
 
-import { forwardRef, useState, type InputHTMLAttributes } from "react";
+import { forwardRef, useId, useState, type InputHTMLAttributes } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -12,7 +12,8 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
   ({ className, label, error, hint, id, type, ...props }, ref) => {
-    const inputId = id ?? props.name;
+    const generatedId = useId();
+    const inputId = id ?? props.name ?? generatedId;
     const isPassword = type === "password";
     const [visible, setVisible] = useState(false);
     const resolvedType = isPassword ? (visible ? "text" : "password") : type;
@@ -45,7 +46,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
               type="button"
               onClick={() => setVisible((v) => !v)}
               className="absolute top-1/2 right-2.5 -translate-y-1/2 rounded-md p-1.5 text-text-muted transition-colors hover:text-text focus:outline-none focus-visible:ring-2 focus-visible:ring-secondary/40"
-              aria-label={visible ? "Hide password" : "Show password"}
+              aria-label={visible ? "Hide characters" : "Show characters"}
             >
               {visible ? (
                 <EyeOff className="h-4 w-4" aria-hidden />

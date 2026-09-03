@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowLeft } from "lucide-react";
@@ -46,11 +46,12 @@ function CreateGroupContent() {
     formState: { errors, isSubmitting },
     getValues,
     setValue,
-    watch,
   } = useForm<CreateGroupDetailsValues>({
     resolver: zodResolver(detailsSchema),
     defaultValues: { frequency: "monthly", contributionAmount: 10000 },
   });
+
+  const frequency = useWatch({ control, name: "frequency" });
 
   async function onDetailsSubmit() {
     const values = getValues();
@@ -114,7 +115,7 @@ function CreateGroupContent() {
             register={register}
             control={control}
             errors={errors}
-            frequency={watch("frequency")}
+            frequency={frequency}
             setValue={setValue}
             inviteEmails={inviteEmails}
             onInviteEmailsChange={setInviteEmails}

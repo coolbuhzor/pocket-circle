@@ -69,9 +69,9 @@ export async function apiFetch<T = unknown>(
   return JSON.parse(text) as T;
 }
 
-/** Auth routes (set/clear httpOnly cookie server-side). */
+/** Auth routes (set/clear httpOnly cookie server-side, plus public password reset). */
 export async function authFetch<T = unknown>(
-  path: "login" | "signup" | "logout",
+  path: "login" | "signup" | "logout" | "forgot-password" | "reset-password",
   body?: unknown,
 ): Promise<T> {
   const res = await fetch(`/api/auth/${path}`, {

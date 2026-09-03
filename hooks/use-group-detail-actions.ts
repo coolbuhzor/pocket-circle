@@ -15,6 +15,7 @@ import { ApiError } from "@/lib/api/client";
 import type { GroupFrequency } from "@/lib/api/types";
 import { inviteResultMessage } from "@/lib/invites";
 import { formatNaira } from "@/lib/utils";
+import type { EmailSendResponse } from "@/lib/api/types";
 
 interface UseGroupDetailActionsOptions {
   groupId: string;
@@ -42,6 +43,8 @@ export function useGroupDetailActions({
   const createInvite = useCreateInvite(groupId);
   const closeCycle = useCloseCycle(groupId);
   const [inviteLink, setInviteLink] = useState("");
+  const [inviteEmailSend, setInviteEmailSend] =
+    useState<EmailSendResponse | null>(null);
 
   async function handleReorder(userId: string, direction: "up" | "down") {
     const ids = [...orderedMemberIds];
@@ -90,6 +93,15 @@ export function useGroupDetailActions({
       const url =
         invite.url ?? `${window.location.origin}/invite/${invite.token}`;
       setInviteLink(url);
+      setInviteEmailSend({
+        demoMode: invite.demoMode ?? true,
+        delivered: invite.delivered ?? false,
+        deliveryNote:
+          invite.deliveryNote ??
+          "Resend demo mode: no real email is being delivered. Resend test/sandbox keys can only send to the account owner’s verified address.",
+        deliveryError: invite.deliveryError,
+        email: invite.email ?? null,
+      });
       await navigator.clipboard.writeText(url);
 
       if (invite.matchedExistingUser) {
@@ -172,6 +184,7 @@ export function useGroupDetailActions({
 
   return {
     inviteLink,
+    inviteEmailSend,
     closingCycle: closeCycle.isPending,
     savingSettings: updateGroup.isPending,
     generatingInvite: createInvite.isPending,

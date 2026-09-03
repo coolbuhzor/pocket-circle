@@ -191,6 +191,7 @@ function GroupDetailContent() {
             form={settingsForm}
             onChange={setSettingsDraft}
             inviteLink={actions.inviteLink}
+            inviteEmailSend={actions.inviteEmailSend}
             saving={actions.savingSettings}
             generatingInvite={actions.generatingInvite}
             deleting={actions.deletingGroup}
