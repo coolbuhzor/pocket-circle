@@ -233,7 +233,7 @@ function UpdatePasswordCard() {
     },
   });
 
-  async function onSubmit(_values: PasswordValues) {
+  async function onSubmit() {
     toast("Password updates aren’t available yet", "info");
   }
 

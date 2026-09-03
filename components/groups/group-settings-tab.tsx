@@ -3,6 +3,7 @@
 import { FormEvent, useState } from "react";
 import { Link as LinkIcon, Trash2 } from "lucide-react";
 import { CopyableField } from "@/components/copyable-field";
+import { EmailPayloadCard } from "@/components/email-payload-card";
 import { InviteList } from "@/components/invite-list";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,7 +11,7 @@ import { Select } from "@/components/ui/select";
 import { AmountInput } from "@/components/ui/amount-input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useGroupInvites } from "@/hooks/use-invites";
-import type { GroupFrequency } from "@/lib/api/types";
+import type { EmailSendResponse, GroupFrequency } from "@/lib/api/types";
 import { DELETE_GROUP_BLOCKED_TOOLTIP, FREQUENCY_OPTIONS } from "@/lib/groups";
 
 export type GroupSettingsForm = {
@@ -24,6 +25,7 @@ interface GroupSettingsTabProps {
   form: GroupSettingsForm;
   onChange: (form: GroupSettingsForm) => void;
   inviteLink: string;
+  inviteEmailSend?: EmailSendResponse | null;
   saving?: boolean;
   generatingInvite?: boolean;
   deleting?: boolean;
@@ -38,6 +40,7 @@ export function GroupSettingsTab({
   form,
   onChange,
   inviteLink,
+  inviteEmailSend,
   saving,
   generatingInvite,
   deleting,
@@ -116,6 +119,17 @@ export function GroupSettingsTab({
             value={inviteLink}
             mono={false}
           />
+        )}
+        {inviteEmailSend?.email && (
+          <div className="mt-4">
+            <EmailPayloadCard
+              payload={inviteEmailSend.email}
+              demoMode={inviteEmailSend.demoMode}
+              delivered={inviteEmailSend.delivered}
+              deliveryNote={inviteEmailSend.deliveryNote}
+              deliveryError={inviteEmailSend.deliveryError}
+            />
+          </div>
         )}
 
         <div className="mt-6 border-t border-primary-light/25 pt-5">

@@ -10,6 +10,7 @@ interface CopyableFieldProps {
   value: string;
   mono?: boolean;
   className?: string;
+  multiline?: boolean;
 }
 
 export function CopyableField({
@@ -17,6 +18,7 @@ export function CopyableField({
   value,
   mono = true,
   className,
+  multiline = false,
 }: CopyableFieldProps) {
   const [copied, setCopied] = useState(false);
   const { toast } = useToast();
@@ -37,11 +39,17 @@ export function CopyableField({
       <span className="text-xs font-medium uppercase tracking-wide text-text-muted">
         {label}
       </span>
-      <div className="flex items-center gap-2 rounded-xl border border-primary-light/40 bg-bg px-3 py-2.5 transition-colors focus-within:border-secondary hover:border-primary-light">
+      <div
+        className={cn(
+          "flex gap-2 rounded-xl border border-primary-light/40 bg-bg px-3 py-2.5 transition-colors focus-within:border-secondary hover:border-primary-light",
+          multiline ? "items-start" : "items-center",
+        )}
+      >
         <span
           className={cn(
-            "flex-1 truncate text-sm text-text",
+            "flex-1 text-sm text-text",
             mono && "font-mono tracking-wide",
+            multiline ? "whitespace-pre-wrap break-words" : "truncate",
           )}
         >
           {value}

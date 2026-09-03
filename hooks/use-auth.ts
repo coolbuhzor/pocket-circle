@@ -2,7 +2,7 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiFetch, authFetch } from "@/lib/api/client";
-import type { User } from "@/lib/api/types";
+import type { EmailSendResponse, User } from "@/lib/api/types";
 
 export function useMe() {
   return useQuery({
@@ -73,5 +73,19 @@ export function useUpdateMe() {
       queryClient.setQueryData(["me"], user);
       void queryClient.invalidateQueries({ queryKey: ["me"] });
     },
+  });
+}
+
+export function useForgotPassword() {
+  return useMutation({
+    mutationFn: (email: string) =>
+      authFetch<EmailSendResponse>("forgot-password", { email }),
+  });
+}
+
+export function useResetPassword() {
+  return useMutation({
+    mutationFn: (body: { token: string; password: string }) =>
+      authFetch<{ ok: true }>("reset-password", body),
   });
 }

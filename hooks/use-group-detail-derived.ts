@@ -9,6 +9,7 @@ import type {
   User,
 } from "@/lib/api/types";
 import {
+  contributionDisplayStatus,
   memberDisplayName,
   memberStatus,
   resolveCanDeleteGroup,
@@ -117,14 +118,19 @@ export function useGroupDetailDerived({
     if (!cycle || !group) return [];
     return orderedMembers
       .filter((m) => m.userId !== cycle.collectorUserId)
-      .map((m) => ({
-        userId: m.userId,
-        name: memberDisplayName(m),
-        status: memberStatus(m),
-        contribution: contributions.find(
+      .map((m) => {
+        const contribution = contributions.find(
           (c) => c.cycleId === cycle.id && c.payerUserId === m.userId,
-        ),
-      }));
+        );
+        return {
+          userId: m.userId,
+          name: memberDisplayName(m),
+          status: contribution
+            ? contributionDisplayStatus(contribution)
+            : memberStatus(m),
+          contribution,
+        };
+      });
   }, [cycle, group, orderedMembers, contributions]);
 
   const myDisplayStatus =

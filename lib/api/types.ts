@@ -85,6 +85,27 @@ export interface GroupListItem extends Group {
 export interface InviteSentResult {
   email: string;
   matchedExistingUser: boolean;
+  demoMode?: boolean;
+  delivered?: boolean;
+  deliveryNote?: string;
+  deliveryError?: string | null;
+  emailPayload?: EmailPayload | null;
+}
+
+/** Email that was (or would be) sent via Resend. Always returned in demo mode. */
+export interface EmailPayload {
+  to: string;
+  subject: string;
+  body: string;
+}
+
+/** Shared envelope when an endpoint composes a Resend email. */
+export interface EmailSendResponse {
+  demoMode: boolean;
+  delivered: boolean;
+  deliveryNote: string;
+  deliveryError?: string | null;
+  email: EmailPayload | null;
 }
 
 /** POST /groups response — group plus the outcome of any `memberEmails` invites. */
@@ -259,7 +280,7 @@ export interface CycleSummary {
   members?: CycleSummaryRow[];
 }
 
-export interface CreateInviteResponse {
+export interface CreateInviteResponse extends EmailSendResponse {
   token: string;
   expiresAt?: string;
   url?: string;

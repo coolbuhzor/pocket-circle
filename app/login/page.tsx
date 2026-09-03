@@ -68,6 +68,14 @@ function LoginForm() {
           {...register("password")}
           error={errors.password?.message}
         />
+        <p className="-mt-2 text-right text-sm">
+          <Link
+            href="/forgot-password"
+            className="font-medium text-secondary transition-colors hover:text-primary hover:underline"
+          >
+            Forgot password?
+          </Link>
+        </p>
 
         {errors.root && (
           <p className="rounded-lg bg-danger/10 px-3 py-2 text-sm text-danger animate-[pc-fade_.2s_ease-out]">

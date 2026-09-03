@@ -72,9 +72,10 @@ export function useResendInvite(groupId: string) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (token: string) =>
-      apiFetch(`groups/${groupId}/invites/${token}/resend`, {
-        method: "POST",
-      }),
+      apiFetch<CreateInviteResponse>(
+        `groups/${groupId}/invites/${token}/resend`,
+        { method: "POST" },
+      ),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ["invites", groupId] });
     },
